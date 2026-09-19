@@ -19,9 +19,7 @@
       <span class="api-dot" id="api-status-dot"></span>
       <span id="api-status-text">Conectando ao banco de dados...</span>
     </div>
-    <div style="display: none;">
-      <a onclick="abrirConfigModal()">Configurações da Conexão (Google Apps Script)</a>
-    </div>
+    
   </div>
 
   <!-- Cabeçalho Principal -->
@@ -73,6 +71,10 @@
           Cadastrar Produto
         </button>
 
+        <button class="btn-sub-client-badge" id="btn-client-clube-status" onclick="switchView('feiramais')">
+          Feira Livre+
+        </button>
+
         <button class="cart-button" onclick="toggleCartDrawer()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="21" r="1"/>
@@ -96,6 +98,7 @@
         <li class="nav-item" data-view="produtores" onclick="switchView('produtores')">Produtores Parceiros</li>
         <li class="nav-item" data-view="rastreamento" onclick="switchView('rastreamento')">Acompanhar Pedido</li>
         <li class="nav-item" data-view="produtor-painel" onclick="switchView('produtor-painel')">Área do Produtor</li>
+        <li class="nav-item" data-view="feiramais" onclick="switchView('feiramais')">Feira Livre+</li>
         <li class="nav-item" data-view="logistica" onclick="switchView('logistica')">Logística e Rotas</li>
         <li class="nav-item" data-view="sobre" onclick="switchView('sobre')">Sobre o Projeto</li>
       </ul>
@@ -303,77 +306,292 @@
     </section>
 
     <!-- VIEW 6: PAINEL DO PRODUTOR -->
-    <section id="view-produtor-painel" class="view-section">
-      <div class="form-box">
-        <h3>Cadastro de Produto — Agricultura Familiar</h3>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
-          Cadastre novos alimentos para inclusão imediata no catálogo de vendas.
-        </p>
-        <form onsubmit="salvarNovoProduto(event)">
-          <div class="form-grid">
-            <div class="form-group full">
-              <label>Nome do Alimento</label>
-              <input type="text" id="adm-prod-name" required placeholder="Ex: Manga Palmer Agroecológica">
+        <!-- VIEW 7: PLANOS PARA PRODUTORES -->
+        <!-- VIEW: FEIRA LIVRE+ (ASSINATURA EXCLUSIVA PARA CLIENTES) -->
+    <section id="view-feiramais" class="view-section">
+      <div class="feiramais-hero">
+        <span class="feiramais-pill">Clube de Beneficios para Clientes</span>
+        <h2>Feira Livre+</h2>
+        <p class="feiramais-subtitle">Mais vantagens para comprar de produtores locais.</p>
+        <p class="feiramais-desc">Assine o Feira Livre+ para economizar com frete gratis, cupons exclusivos e apoiar diretamente a agricultura familiar de Sergipe.</p>
+      </div>
+
+      <!-- Comparativo Simples: Plano Gratuito vs Feira Livre+ -->
+      <div class="feiramais-compare-grid">
+        
+        <!-- Plano Gratuito -->
+        <div class="feiramais-card">
+          <div class="feiramais-card-top">
+            <h3>Gratuito</h3>
+            <p>Para quem compra esporadicamente na feira.</p>
+          </div>
+          <div class="feiramais-price-box">
+            <span class="currency">R$</span>
+            <span class="amount">0</span>
+            <span class="period">/mes</span>
+          </div>
+          <ul class="feiramais-benefits-list">
+            <li><span class="check-dot">P</span><span>Comprar normalmente na plataforma</span></li>
+            <li><span class="check-dot">P</span><span>Acompanhar pedidos em tempo real</span></li>
+            <li><span class="check-dot">P</span><span>Salvar produtores favoritos</span></li>
+            <li><span class="check-dot">P</span><span>Avaliar pedidos e produtos</span></li>
+            <li><span class="check-dot">P</span><span>Receber ofertas gerais</span></li>
+            <li><span class="check-dot">P</span><span>Utilizar cupons padrao</span></li>
+            <li class="disabled"><span class="check-dot">-</span><span>Frete gratis em pedidos acima de R$ 50,00</span></li>
+            <li class="disabled"><span class="check-dot">-</span><span>Cupom exclusivo de 10% OFF (FEIRAMAIS10)</span></li>
+            <li class="disabled"><span class="check-dot">-</span><span>Ofertas e colheitas antecipadas</span></li>
+          </ul>
+          <div class="feiramais-card-footer">
+            <span class="plan-current-tag" id="tag-plano-gratuito-ativo">Plano Padrao</span>
+          </div>
+        </div>
+
+        <!-- Feira Livre+ -->
+        <div class="feiramais-card featured">
+          <span class="feiramais-badge-featured">Mais Vantajoso</span>
+          <div class="feiramais-card-top">
+            <h3>Feira Livre+</h3>
+            <p>Economia garantida para quem valoriza comida de verdade.</p>
+          </div>
+          <div class="feiramais-price-box featured">
+            <span class="currency">R$</span>
+            <span class="amount" id="fl-price-display">9,90</span>
+            <span class="period">/mes</span>
+          </div>
+          <ul class="feiramais-benefits-list">
+            <li><span class="check-dot">P</span><span><strong>Frete gratis em pedidos a partir de R$ 50,00</strong></span></li>
+            <li><span class="check-dot">P</span><span><strong>Cupom exclusivo de 10% OFF (FEIRAMAIS10)</strong></span></li>
+            <li><span class="check-dot">P</span><span>Descontos especiais em alimentos sazonais</span></li>
+            <li><span class="check-dot">P</span><span>Ofertas e colheitas antecipadas da semana</span></li>
+            <li><span class="check-dot">P</span><span>Apoio direto aos pequenos produtores rurais</span></li>
+            <li><span class="check-dot">P</span><span>Painel de acompanhamento da economia gerada</span></li>
+            <li><span class="check-dot">P</span><span>Sem fidelidade: cancele a qualquer momento</span></li>
+          </ul>
+          <div class="feiramais-card-footer">
+            <button class="btn-feiramais-cta" id="btn-cta-feiramais" onclick="FeiraMaisModule.iniciarCheckout()">
+              Assinar Feira Livre+
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dashboard de Assinatura e Economia do Cliente -->
+      <div class="feiramais-dashboard-area">
+        
+        <!-- Cartão de Minha Assinatura (Cliente) -->
+        <div class="client-sub-box">
+          <div class="client-sub-header">
+            <div>
+              <h3 id="cli-sub-title">Minha Assinatura</h3>
+              <p id="cli-sub-subtitle">Plano atual de compras</p>
             </div>
-            <div class="form-group">
-              <label>Preço Unitário (R$)</label>
-              <input type="number" step="0.10" id="adm-prod-price" required placeholder="7.50">
-            </div>
-            <div class="form-group">
-              <label>Unidade de Medida</label>
-              <select id="adm-prod-unit">
-                <option value="Kg">Kg</option>
-                <option value="Unid">Unidade</option>
-                <option value="Bandeja">Bandeja</option>
-                <option value="Pote 500g">Pote 500g</option>
-                <option value="Maço">Maço</option>
-                <option value="Dúzia">Dúzia</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Categoria</label>
-              <select id="adm-prod-cat">
-                <option value="1">Vegetais</option>
-                <option value="2">Frutas</option>
-                <option value="3">Raízes</option>
-                <option value="4">Folhas</option>
-                <option value="5">Grãos</option>
-                <option value="6">Laticínios</option>
-                <option value="7">Ovos</option>
-                <option value="8">Mel</option>
-                <option value="9">Artesanais</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Produtor Responsável</label>
-              <select id="adm-prod-farmer">
-                <option value="1">Fazenda Boa Vista (São Cristóvão)</option>
-                <option value="2">Ateliê Fibra Criativa (Aracaju)</option>
-                <option value="3">Apiário Doce Mel (Estância)</option>
-                <option value="4">Sítio Verde Vivo (Itaporanga)</option>
-                <option value="5">Sabores da Roça (São Cristóvão)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Estoque Inicial</label>
-              <input type="number" id="adm-prod-stock" value="40">
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label class="checkbox-label" for="adm-prod-organic">
-                <input type="checkbox" id="adm-prod-organic" checked>
-                <span>Cultivo Orgânico / Agroecológico</span>
-              </label>
-            </div>
-            <div class="form-group full">
-              <label>Descrição do Cultivo</label>
-              <textarea id="adm-prod-desc" rows="2" placeholder="Descreva os cuidados na colheita e características do produto..."></textarea>
+            <div>
+              <span class="sub-badge ativa" id="cli-sub-status-badge">Gratuita</span>
             </div>
           </div>
 
-          <button type="submit" class="btn-submit-form">
-            Salvar Produto no Catálogo
-          </button>
-        </form>
+          <!-- Alerta de Cancelamento se houver -->
+          <div id="cli-sub-alert" class="sub-alert-box warning" style="display:none;"></div>
+
+          <div class="client-sub-grid">
+            <div class="client-sub-item">
+              <small>Plano Atual</small>
+              <strong id="cli-sub-plano-nome">Gratuito</strong>
+            </div>
+            <div class="client-sub-item">
+              <small>Valor Mensal</small>
+              <strong id="cli-sub-valor">R$ 0,00</strong>
+            </div>
+            <div class="client-sub-item">
+              <small>Proxima Cobranca</small>
+              <strong id="cli-sub-proxima-data">-</strong>
+            </div>
+            <div class="client-sub-item">
+              <small>Data de Inicio</small>
+              <strong id="cli-sub-inicio-data">-</strong>
+            </div>
+          </div>
+
+          <div class="sub-actions-bar" id="cli-sub-actions-bar">
+            <button class="btn-sub-action primary" id="btn-cli-assinar-toggle" onclick="FeiraMaisModule.iniciarCheckout()">
+              Assinar Feira Livre+
+            </button>
+            <button class="btn-sub-action danger" id="btn-cli-cancelar-sub" onclick="FeiraMaisModule.abrirModalCancelar()" style="display:none;">
+              Cancelar Assinatura
+            </button>
+            <button class="btn-sub-action primary" id="btn-cli-reativar-sub" onclick="FeiraMaisModule.reativarAssinatura()" style="display:none;">
+              Reativar Assinatura
+            </button>
+          </div>
+        </div>
+
+        <!-- Painel: Economia com Feira Livre+ -->
+        <div class="economy-stats-card">
+          <h3>Economia com Feira Livre+</h3>
+          <p>Valores economizados em fretes gratis e cupons exclusivos desde o inicio da sua assinatura.</p>
+          
+          <div class="economy-grid">
+            <div class="economy-box">
+              <small>Economia Este Mes</small>
+              <strong id="eco-mes-val">R$ 24,00</strong>
+            </div>
+            <div class="economy-box">
+              <small>Economia Acumulada</small>
+              <strong id="eco-total-val">R$ 87,50</strong>
+            </div>
+            <div class="economy-box cost">
+              <small>Valor da Assinatura</small>
+              <strong id="eco-custo-val">R$ 9,90</strong>
+            </div>
+            <div class="economy-box net">
+              <small>Economia Liquida</small>
+              <strong id="eco-liquida-val">R$ 77,60</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Histórico de Pagamentos de Assinatura do Cliente -->
+        <div class="sub-invoices-card">
+          <h4>Historico de Mensalidades Feira Livre+</h4>
+          <div class="invoices-table-wrap">
+            <table class="invoices-table">
+              <thead>
+                <tr>
+                  <th>Fatura</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Metodo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="client-sub-invoices-tbody">
+                <!-- Preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 6: ÁREA DO PRODUTOR (100% LIVRE E GRATUITA) -->
+    <section id="view-produtor-painel" class="view-section">
+      <div class="producer-panel-wrap">
+        
+        <!-- Cabeçalho do Produtor -->
+        <div class="producer-header-selector">
+          <div class="producer-header-info">
+            <h2>Area do Produtor &mdash; Agricultura Familiar</h2>
+            <p>Cadastre seus alimentos agroecologicos, gerencie estoque e prepare pedidos para entrega direta aos consumidores de Sergipe.</p>
+          </div>
+          <div class="producer-selector-control">
+            <label for="sel-active-producer">Produtor:</label>
+            <select id="sel-active-producer" onchange="selecionarProdutorPainel(this.value)">
+              <option value="1">Fazenda Boa Vista (Sao Cristovao)</option>
+              <option value="2">Atelie Fibra Criativa (Aracaju)</option>
+              <option value="3">Apiario Doce Mel (Estancia)</option>
+              <option value="4">Sitio Verde Vivo (Itaporanga)</option>
+              <option value="5">Sabores da Roca (Sao Cristovao)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Formulário de Cadastro de Alimento (Sem limite de cota) -->
+        <div class="form-box" style="margin-bottom: 24px;">
+          <h3>Cadastrar Alimento no Catalogo</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+            Inclusao imediata de colheitas e produtos no catalogo da cooperativa. Acesso livre para todos os agricultores parceiros.
+          </p>
+          <form onsubmit="salvarNovoProduto(event)" id="form-novo-produto">
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Nome do Alimento</label>
+                <input type="text" id="adm-prod-name" required placeholder="Ex: Manga Palmer Agroecologica">
+              </div>
+              <div class="form-group">
+                <label>Preco Unitario (R$)</label>
+                <input type="number" step="0.10" id="adm-prod-price" required placeholder="7.50">
+              </div>
+              <div class="form-group">
+                <label>Unidade de Medida</label>
+                <select id="adm-prod-unit">
+                  <option value="Kg">Kg</option>
+                  <option value="Unid">Unidade</option>
+                  <option value="Bandeja">Bandeja</option>
+                  <option value="Pote 500g">Pote 500g</option>
+                  <option value="Maco">Maco</option>
+                  <option value="Duzia">Duzia</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Categoria</label>
+                <select id="adm-prod-cat">
+                  <option value="1">Vegetais</option>
+                  <option value="2">Frutas</option>
+                  <option value="3">Raizes</option>
+                  <option value="4">Folhas</option>
+                  <option value="5">Graos</option>
+                  <option value="6">Laticinios</option>
+                  <option value="7">Ovos</option>
+                  <option value="8">Mel</option>
+                  <option value="9">Artesanais</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Produtor Responsavel</label>
+                <select id="adm-prod-farmer">
+                  <option value="1">Fazenda Boa Vista (Sao Cristovao)</option>
+                  <option value="2">Atelie Fibra Criativa (Aracaju)</option>
+                  <option value="3">Apiario Doce Mel (Estancia)</option>
+                  <option value="4">Sitio Verde Vivo (Itaporanga)</option>
+                  <option value="5">Sabores da Roca (Sao Cristovao)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Estoque Inicial</label>
+                <input type="number" id="adm-prod-stock" value="40">
+              </div>
+              <div class="form-group form-group-checkbox">
+                <label class="checkbox-label" for="adm-prod-organic">
+                  <input type="checkbox" id="adm-prod-organic" checked>
+                  <span>Cultivo Organico / Agroecologico</span>
+                </label>
+              </div>
+              <div class="form-group full">
+                <label>Descricao do Cultivo</label>
+                <textarea id="adm-prod-desc" rows="2" placeholder="Descreva os cuidados na colheita e caracteristicas do produto..."></textarea>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit-form" id="btn-submit-produto">
+              Salvar Alimento no Catalogo
+            </button>
+          </form>
+        </div>
+
+        <!-- Tabela de Alimentos Cadastrados do Produtor -->
+        <div class="sub-invoices-card">
+          <h4>Meus Alimentos no Catalogo</h4>
+          <div class="invoices-table-wrap">
+            <table class="invoices-table">
+              <thead>
+                <tr>
+                  <th>Alimento</th>
+                  <th>Categoria</th>
+                  <th>Preco</th>
+                  <th>Estoque</th>
+                  <th>Cultivo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="producer-products-tbody">
+                <!-- Preenchido dinamicamente via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -514,6 +732,28 @@
               </div>
             </div>
 
+            <!-- Painel de Metricas da Rota Real (Google Maps Directions) -->
+            <div class="route-metrics-bar">
+              <div class="route-metric-pill">
+                <small>Distancia Total</small>
+                <strong id="sel-route-real-dist">Calculando rota...</strong>
+              </div>
+              <div class="route-metric-pill">
+                <small>Tempo Estimado</small>
+                <strong id="sel-route-real-time">Calculando tempo...</strong>
+              </div>
+              <div class="route-metric-pill">
+                <small>Total de Paradas</small>
+                <strong id="sel-route-real-stops">5 paradas</strong>
+              </div>
+            </div>
+
+            <!-- Alerta detalhado de status da API de Roteirizacao -->
+            <div id="sel-route-error-banner" class="route-error-banner" style="display: none;">
+              <strong id="sel-route-error-title">Erro da API:</strong>
+              <div id="sel-route-error-msg">Nao foi possivel calcular a rota.</div>
+            </div>
+
             <!-- Lista Sequencial de Paradas da Rota Otimizada -->
             <div class="stops-sequence-container">
               <div class="stops-list-head">
@@ -587,7 +827,7 @@
                 <span class="infocard-stop-num" id="info-stop-num">Parada 01</span>
                 <strong class="infocard-client" id="info-client">Maria Oliveira</strong>
               </div>
-              <button class="infocard-close" onclick="LogisticaModule.fecharInfoCard()">✕</button>
+              <button class="infocard-close" onclick="LogisticaModule.fecharInfoCard()">&times;</button>
             </div>
             <div class="infocard-body">
               <p class="infocard-addr" id="info-addr">Av. Santos Dumont, Atalaia • Aracaju</p>
@@ -638,7 +878,7 @@
     <div class="drawer-panel" onclick="event.stopPropagation()">
       <div class="drawer-top">
         <h3>Carrinho de Compras</h3>
-        <button class="btn-close" onclick="closeCartDrawer()" title="Fechar">✕</button>
+        <button class="btn-close" onclick="closeCartDrawer()" title="Fechar">&times;</button>
       </div>
 
       <div class="drawer-body" id="cart-drawer-body">
@@ -668,32 +908,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CONFIGURAÇÃO DA API APPS SCRIPT -->
-  <div class="modal-overlay" id="api-config-modal" onclick="fecharConfigModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
-        <h3 style="font-size: 15px; color: var(--text-main); font-weight:700;">Configurar Conexão do Banco de Dados</h3>
-        <button class="btn-close" onclick="fecharConfigModal()">✕</button>
-      </div>
-      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
-        Insira a URL do aplicativo da Web gerada no Google Apps Script (Implantar &gt; Gerenciar implantações &gt; URL da Web):
-      </p>
-      <div class="form-group" style="margin-bottom: 16px;">
-        <label>URL da Implantação (exec):</label>
-        <input 
-          type="url" 
-          id="api-url-input" 
-          placeholder="https://script.google.com/macros/s/.../exec"
-        >
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 8px;">
-        <button class="btn-nav-action" onclick="fecharConfigModal()">Cancelar</button>
-        <button class="btn-submit-form" style="width: auto; padding: 7px 16px;" onclick="salvarConfigApi()">
-          Salvar Conexão
-        </button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Toast Notificação -->
   <div class="toast-notice" id="toast"></div>
@@ -717,6 +932,7 @@
           <li><a onclick="switchView('produtos')" style="cursor:pointer;">Catálogo de Alimentos</a></li>
           <li><a onclick="switchView('produtores')" style="cursor:pointer;">Produtores Cooperados</a></li>
           <li><a onclick="switchView('rastreamento')" style="cursor:pointer;">Acompanhar Pedido</a></li>
+          <li><a onclick="switchView('feiramais')" style="cursor:pointer;">Feira Livre+</a></li>
           <li><a onclick="switchView('logistica')" style="cursor:pointer;">Logística e Rotas</a></li>
           <li><a onclick="switchView('sobre')" style="cursor:pointer;">Sobre o Projeto</a></li>
         </ul>
@@ -735,6 +951,91 @@
       <span>Agricultura Familiar e Agroecologia</span>
     </div>
   </footer>
+
+    <!-- MODAL: CHECKOUT FEIRA LIVRE+ (CLIENTE) -->
+  <div class="modal-overlay" id="modal-checkout-feiramais" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Assinatura Feira Livre+</h3>
+        <button class="modal-close-btn" onclick="FeiraMaisModule.fecharCheckout()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Banner Modo Demonstração -->
+        <div class="demo-mode-notice">
+          <strong>Modo Demonstracao Ativo</strong>
+          <p>Nenhuma cobranca real sera realizada. Esta simulacao demonstra os beneficios de frete gratis e cupons exclusivos do Feira Livre+.</p>
+        </div>
+
+        <!-- Resumo da Assinatura -->
+        <div class="checkout-plan-summary">
+          <div class="checkout-summary-row">
+            <span>Plano Selecionado:</span>
+            <strong>Feira Livre+</strong>
+          </div>
+          <div class="checkout-summary-row">
+            <span>Ciclo:</span>
+            <span>Mensal recorrente</span>
+          </div>
+          <div class="checkout-summary-row">
+            <span>Proxima Cobranca:</span>
+            <span id="chk-cli-proxima-data">19/10/2026</span>
+          </div>
+          <div class="checkout-summary-row">
+            <span>Beneficio Principal:</span>
+            <span style="color:var(--primary); font-weight:600;">Frete gratis a partir de R$ 50,00</span>
+          </div>
+          <div class="checkout-summary-row total">
+            <span>Valor Mensal:</span>
+            <span style="color:var(--primary);">R$ 9,90 /mes</span>
+          </div>
+        </div>
+
+        <div class="checkout-field">
+          <label>Forma de Pagamento Recorrente:</label>
+          <select id="chk-cli-metodo">
+            <option value="Cartao de Credito">Cartao de Credito (Cobranca mensal automatica)</option>
+            <option value="Pix Recorrente">Pix Recorrente (Notificacao com chave a cada 30 dias)</option>
+          </select>
+          <small style="display:block; color:var(--text-muted); margin-top:4px; font-size:11.5px;">
+            Seguranca: Seus dados bancarios sao processados com criptografia diretamente pelo gateway.
+          </small>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-sub-action" onclick="FeiraMaisModule.fecharCheckout()">Voltar</button>
+        <button type="button" class="btn-sub-action primary" id="btn-cli-confirmar-sub" onclick="FeiraMaisModule.confirmarAssinatura()">
+          Confirmar Assinatura
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CANCELAR ASSINATURA FEIRA LIVRE+ -->
+  <div class="modal-overlay" id="modal-cancelar-feiramais" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Cancelar Feira Livre+</h3>
+        <button class="modal-close-btn" onclick="FeiraMaisModule.fecharCancelar()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 12px;">
+          Tem certeza que deseja cancelar sua assinatura?
+        </p>
+        <div class="sub-alert-box info">
+          A assinatura continuara ativa ate o final do periodo ja pago (<span id="cancel-cli-periodo">19/10/2026</span>).
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 16px;">
+          Apos essa data, seus pedidos voltarao a ter taxa normal de entrega e os cupons exclusivos serao desativados. Voce pode reativar a qualquer momento!
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-sub-action" onclick="FeiraMaisModule.fecharCancelar()">Manter Assinatura</button>
+        <button type="button" class="btn-sub-action danger" onclick="FeiraMaisModule.confirmarCancelamento()">Confirmar Cancelamento</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

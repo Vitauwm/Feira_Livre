@@ -82,7 +82,8 @@ function getProductImage(p) {
 // 1. CONFIGURAÇÃO CENTRAL DA URL DA API
 // Substitua pela URL da sua implantação do Google Apps Script:
 const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbxd_5-ddOU0wR8X_7V9XnicwYup8o8tme85g2mDSlxKNc4c-gcWkv3CWv4IiLdz8xVN/exec';
-let API_URL = localStorage.getItem('FEIRA_LIVRE_API_URL') || DEFAULT_API_URL;
+let API_URL = DEFAULT_API_URL;
+try { localStorage.setItem('FEIRA_LIVRE_API_URL', DEFAULT_API_URL); } catch(e) {}
 
 // 2. BASE DE DADOS MOCK (FALLBACK QUANDO A API NÃO ESTIVER CONFIGURADA)
 const MOCK_DB = {
@@ -404,25 +405,73 @@ function localMockHandler(action, method, data) {
     if (action === 'produtos') return { success: true, data: produtos.length ? produtos : MOCK_DB.produtos };
     if (action === 'produtores') return { success: true, data: produtores.length ? produtores : MOCK_DB.produtores };
     if (action === 'categorias') return { success: true, data: MOCK_DB.categorias };
+
+    if (action === 'planoCliente') {
+      return {
+        success: true,
+        data: window.FeiraMaisModule ? window.FeiraMaisModule.getConfig() : { precoMensal: 9.90, pedidoMinimoFreteGratis: 50.00 }
+      };
+    }
+    if (action === 'assinaturaCliente') {
+      return {
+        success: true,
+        data: window.FeiraMaisModule ? window.FeiraMaisModule.verificarAssinaturaCliente() : { isAssinante: false, status: 'gratuita' }
+      };
+    }
+    if (action === 'beneficiosCliente') {
+      const sub = parseFloat(data ? data.subtotal : 0);
+      return {
+        success: true,
+        data: window.FeiraMaisModule ? window.FeiraMaisModule.calcularBeneficiosCarrinho(sub) : {}
+      };
+    }
+    if (action === 'historicoPagamentos') {
+      return { success: true, data: [] };
+    }
     if (action === 'validarCupom') {
-      if (data && String(data.codigo).toUpperCase() === 'FEIRA10') {
-        const sub = parseFloat(data.subtotal || 0);
+      const cod = String(data ? data.codigo : '').toUpperCase().trim();
+      const sub = parseFloat(data && data.subtotal ? data.subtotal : 0);
+
+      if (cod === 'FEIRAMAIS10') {
+        const check = window.FeiraMaisModule ? window.FeiraMaisModule.validarCupomExclusivo(cod) : null;
+        if (check && !check.valido) {
+          return { success: false, error: check.mensagem };
+        }
+        return {
+          success: true,
+          data: { valido: true, codigo: 'FEIRAMAIS10', tipo: 'percentual', desconto_calculado: Number((sub * 0.10).toFixed(2)) }
+        };
+      }
+      if (cod === 'FEIRA10') {
         return { success: true, data: { valido: true, codigo: 'FEIRA10', tipo: 'percentual', desconto_calculado: Number((sub * 0.10).toFixed(2)) } };
       }
-      return { success: false, error: 'Cupom inválido. Tente FEIRA10.' };
+      return { success: false, error: 'Cupom invalido. Tente FEIRA10.' };
     }
   } else if (method === 'POST') {
     if (action === 'criarPedido') {
       const subtotal = cart.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
       const desc = appliedCouponData ? appliedCouponData.desconto_calculado : 0;
+      let freteFinal = shippingRate;
+      if (window.FeiraMaisModule) {
+        const b = window.FeiraMaisModule.calcularBeneficiosCarrinho(subtotal);
+        freteFinal = b.freteFinal;
+        if (b.descontoFrete > 0) {
+          window.FeiraMaisModule.registrarEconomiaPedido(b.descontoFrete, desc);
+        }
+      }
       const id = 'FL-' + Math.floor(100000 + Math.random() * 900000);
-      return { success: true, data: { pedido_id: id, total: subtotal + shippingRate - desc, status: 'recebido' } };
+      return { success: true, data: { pedido_id: id, total: subtotal + freteFinal - desc, status: 'recebido' } };
     }
     if (action === 'adicionarProduto') {
       const id = Date.now();
       const novo = Object.assign({ id }, data);
       produtos.unshift(novo);
       return { success: true, data: novo };
+    }
+    if (action === 'criarAssinaturaCliente' || action === 'cancelarAssinaturaCliente' || 
+        action === 'reativarAssinaturaCliente' || action === 'registrarPagamentoCliente' || 
+        action === 'atualizarStatusAssinaturaCliente') {
+      return { success: true, message: 'Operacao concluida com sucesso (Modo Demonstracao)', data: data };
     }
   }
   return { success: true, data: {} };
@@ -440,6 +489,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderProdutos();
   renderProdutores();
   updateCartUI();
+  if (window.FeiraMaisModule && typeof window.FeiraMaisModule.init === 'function') {
+    window.FeiraMaisModule.init();
+  }
+  renderMeusProdutosCadastrados();
   if (window.LogisticaModule && typeof window.LogisticaModule.init === 'function') {
     window.LogisticaModule.init();
   }
@@ -516,6 +569,14 @@ function switchView(viewName) {
   }
   if (viewName === 'produtores') {
     renderProdutores();
+  }
+  if (viewName === 'feiramais') {
+    if (window.FeiraMaisModule && typeof window.FeiraMaisModule.init === 'function') {
+      window.FeiraMaisModule.init();
+    }
+  }
+  if (viewName === 'produtor-painel') {
+    renderMeusProdutosCadastrados();
   }
   if (viewName === 'logistica') {
     if (window.LogisticaModule && typeof window.LogisticaModule.init === 'function') {
@@ -758,7 +819,7 @@ function renderCartDrawer() {
   if (cart.length === 0) {
     body.innerHTML = `
       <div style="text-align: center; padding: 48px 16px; color: #666;">
-        <span style="font-size: 40px; display: block; margin-bottom: 8px;">🧺</span>
+        <span style="font-size: 40px; display: block; margin-bottom: 8px;"></span>
         <h4>Seu carrinho está vazio</h4>
         <p style="font-size: 13px;">Adicione produtos frescos dos agricultores locais!</p>
       </div>
@@ -791,10 +852,29 @@ function renderCartDrawer() {
 function updateCartCalculations() {
   const subtotal = cart.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
   let desconto = appliedCouponData ? appliedCouponData.desconto_calculado : 0;
-  const total = Math.max(0, subtotal + shippingRate - desconto);
+  let freteFinal = shippingRate;
+  let descontoFrete = 0;
+  let isAssinante = false;
+
+  if (window.FeiraMaisModule) {
+    const ben = window.FeiraMaisModule.calcularBeneficiosCarrinho(subtotal);
+    freteFinal = ben.freteFinal;
+    descontoFrete = ben.descontoFrete;
+    isAssinante = ben.elegivelFreteGratis;
+  }
+
+  const total = Math.max(0, subtotal + freteFinal - desconto);
 
   document.getElementById('cart-subtotal-val').textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-  document.getElementById('cart-shipping-val').textContent = `R$ ${shippingRate.toFixed(2).replace('.', ',')}`;
+  
+  const elShipping = document.getElementById('cart-shipping-val');
+  if (elShipping) {
+    if (descontoFrete > 0) {
+      elShipping.innerHTML = `<span style="text-decoration:line-through; color:var(--text-muted); font-size:12px; margin-right:4px;">R$ 8,00</span> <strong style="color:var(--primary);">R$ 0,00 (Feira Livre+)</strong>`;
+    } else {
+      elShipping.textContent = `R$ ${freteFinal.toFixed(2).replace('.', ',')}`;
+    }
+  }
 
   const descLine = document.getElementById('cart-discount-line');
   if (desconto > 0) {
@@ -999,6 +1079,8 @@ async function salvarNovoProduto(e) {
   const unidade = document.getElementById('adm-prod-unit').value;
   const categoriaId = document.getElementById('adm-prod-cat').value;
   const produtorId = document.getElementById('adm-prod-farmer').value;
+
+
   const organico = document.getElementById('adm-prod-organic').checked;
   const estoque = parseInt(document.getElementById('adm-prod-stock').value, 10);
   const desc = document.getElementById('adm-prod-desc').value.trim();
@@ -1067,30 +1149,11 @@ async function alternarFavorito(prodId) {
 // ============================================================================
 
 function abrirConfigModal() {
-  const modal = document.getElementById('api-config-modal');
-  const input = document.getElementById('api-url-input');
-  if (input) input.value = API_URL;
-  if (modal) modal.classList.add('active');
+  // Conexao direta configurada no codigo
 }
 
-function fecharConfigModal() {
-  const modal = document.getElementById('api-config-modal');
-  if (modal) modal.classList.remove('active');
-}
-
-function salvarConfigApi() {
-  const input = document.getElementById('api-url-input');
-  if (!input) return;
-  API_URL = input.value.trim();
-  localStorage.setItem('FEIRA_LIVRE_API_URL', API_URL);
-  fecharConfigModal();
-  updateApiStatusIndicator();
-  showToast('URL da API salva com sucesso! Recarregando dados da planilha...');
-  carregarDadosIniciais().then(() => {
-    renderProdutos();
-    renderProdutores();
-  });
-}
+function fecharConfigModal() {}
+function salvarConfigApi() {}
 
 // ============================================================================
 // PERSISTÊNCIA LOCAL (LOCALSTORAGE)
@@ -1129,7 +1192,7 @@ function showToast(msg) {
  * Sistema de distribuição sustentável e agrupamento geográfico de entregas
  * ============================================================================
  *
- * ⚠️ CONFIGURAÇÃO DA CHAVE DO GOOGLE MAPS API:
+ *  CONFIGURAÇÃO DA CHAVE DO GOOGLE MAPS API:
  * Insira sua chave de API abaixo para habilitar o Google Maps dinâmico ao vivo:
  * const GOOGLE_MAPS_API_KEY = "AIzaSyCSQTc-GrgO28IWUVKuli-p8lsmuwEB7LE";
  */
@@ -1222,7 +1285,7 @@ window.LogisticaModule = (function () {
       cliente: "Patrícia Lima Dantas",
       telefone: "(79) 99876-1005",
       endereco: "Rua Dr. Celso Oliva, 210",
-      bairro: "Jardins",
+      bairro: "Região Central (Jardins)",
       cidade: "Aracaju",
       latitude: -10.9490,
       longitude: -37.0620,
@@ -1234,7 +1297,7 @@ window.LogisticaModule = (function () {
       horarioFim: "12:30",
       status: "Pendente",
       produtorResponsavel: "Sítio Verde Vivo",
-      regiao: "Zona Sul"
+      regiao: "Centro"
     },
     {
       id: "PED-106",
@@ -1253,7 +1316,7 @@ window.LogisticaModule = (function () {
       horarioFim: "13:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Sul"
+      regiao: "Centro"
     },
 
     // --- CENTRO & LESTE ---
@@ -1542,10 +1605,12 @@ window.LogisticaModule = (function () {
   let modoDemonstracaoAtivo = true;
   let paradaSelecionadaId = null;
 
-  // Estado do Google Maps
+  // Estado do Google Maps e Roteirização Real
   let gMapInstance = null;
   let gMarkers = [];
   let gPolylines = [];
+  let gDirectionsService = null;
+  let gDirectionsRenderer = null;
   let gInfoWindow = null;
   let gMapsLoaded = false;
 
@@ -1842,12 +1907,13 @@ window.LogisticaModule = (function () {
 
       window.initGoogleMapsCallback = function () {
         gMapsLoaded = true;
+        inicializarMapa();
         resolve(true);
       };
 
       const script = document.createElement("script");
       script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry&callback=initGoogleMapsCallback`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=weekly&libraries=routes,geometry&callback=initGoogleMapsCallback`;
       script.async = true;
       script.defer = true;
       script.onerror = () => {
@@ -1888,34 +1954,54 @@ window.LogisticaModule = (function () {
     }
   }
 
+  /**
+   * Renderiza os marcadores e aciona o serviço de roteirização real do Google Maps
+   */
+  /**
+   * Renderiza os marcadores e aciona o serviço de roteirização real do Google Maps
+   */
+  /**
+   * Renderiza os marcadores no mapa e dispara o calculo de rota real pelas vias
+   */
   function renderizarRotaNoGoogleMaps() {
     if (!gMapInstance || !rotasCalculadas[rotaSelecionadaIndex]) return;
 
-    // Limpa marcadores e polylines anteriores
+    // Redimensiona o mapa para o tamanho do container (necessario quando a aba estava oculta)
+    google.maps.event.trigger(gMapInstance, "resize");
+
+    // 1. Limpa marcadores anteriores
     gMarkers.forEach(m => m.setMap(null));
     gMarkers = [];
+
+    // 2. Limpa polylines e direcoes anteriores
     gPolylines.forEach(p => p.setMap(null));
     gPolylines = [];
+    if (gDirectionsRenderer) {
+      gDirectionsRenderer.setDirections({ routes: [] });
+      gDirectionsRenderer.setMap(null);
+      gDirectionsRenderer = null;
+    }
 
     const rotaAtual = rotasCalculadas[rotaSelecionadaIndex];
     const origem = ORIGENS_PRODUTORES[origemAtualId] || ORIGENS_PRODUTORES["1"];
     const bounds = new google.maps.LatLngBounds();
 
-    // 1. Marcador da Propriedade / Produtor (Origem)
-    const origemPos = new google.maps.LatLng(origem.latitude, origem.longitude);
+    // 1. Ponto de Partida / Produtor (Origem)
+    const origemPos = new google.maps.LatLng(Number(origem.latitude), Number(origem.longitude));
     bounds.extend(origemPos);
 
     const farmMarker = new google.maps.Marker({
       position: origemPos,
       map: gMapInstance,
+      zIndex: 110,
       title: `${origem.nome} (Ponto de Partida)`,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
+        scale: 11,
         fillColor: "#1E4D2B",
         fillOpacity: 1,
         strokeColor: "#FFFFFF",
-        strokeWeight: 2
+        strokeWeight: 2.5
       }
     });
     gMarkers.push(farmMarker);
@@ -1923,7 +2009,7 @@ window.LogisticaModule = (function () {
     farmMarker.addListener("click", () => {
       gInfoWindow.setContent(`
         <div style="padding:8px; font-family:sans-serif;">
-          <strong style="color:#1E4D2B; font-size:14px;">🏡 ${origem.nome}</strong>
+          <strong style="color:#1E4D2B; font-size:14px;">${origem.nome}</strong>
           <p style="font-size:12px; color:#555; margin:4px 0 0;">Ponto de partida da rota (${origem.local})</p>
           <small style="color:#777;">Carga inicial conferida</small>
         </div>
@@ -1931,20 +2017,18 @@ window.LogisticaModule = (function () {
       gInfoWindow.open(gMapInstance, farmMarker);
     });
 
-    // 2. Marcadores das Paradas Sequenciais
-    const coordsRota = [origemPos];
-
+    // 2. Marcadores das Paradas Sequenciais (1 a N)
     rotaAtual.pedidos.forEach(p => {
-      const pos = new google.maps.LatLng(p.latitude, p.longitude);
+      const pos = new google.maps.LatLng(Number(p.latitude), Number(p.longitude));
       bounds.extend(pos);
-      coordsRota.push(pos);
 
       const corPin = p.status === "Entregue" ? "#15803D" : 
-                     p.status === "Em rota" ? "#2563EB" : rotaAtual.cor;
+                     p.status === "Em rota" ? "#2563EB" : "#1A73E8";
 
       const marker = new google.maps.Marker({
         position: pos,
         map: gMapInstance,
+        zIndex: 100,
         title: `Parada ${p.sequencia}: ${p.cliente}`,
         label: {
           text: String(p.sequencia),
@@ -1958,7 +2042,7 @@ window.LogisticaModule = (function () {
           fillOpacity: 1,
           strokeColor: "#FFFFFF",
           strokeWeight: 1.5,
-          scale: 1.1,
+          scale: 1.15,
           labelOrigin: new google.maps.Point(0, -29)
         }
       });
@@ -1970,25 +2054,338 @@ window.LogisticaModule = (function () {
       gMarkers.push(marker);
     });
 
-    // 3. Desenho do Trajeto da Rota (Polyline)
-    const polyline = new google.maps.Polyline({
-      path: coordsRota,
-      geodesic: true,
-      strokeColor: rotaAtual.cor,
-      strokeOpacity: 0.85,
-      strokeWeight: 4,
-      map: gMapInstance
-    });
-    gPolylines.push(polyline);
-
-    // Ajusta o enquadramento do mapa
-    gMapInstance.fitBounds(bounds);
+    // 3. ROTEIRIZACAO REAL PELAS RUAS (DirectionsService)
+    calcularERenderizarRotaRealGoogle(origem, rotaAtual.pedidos, bounds);
   }
 
+  // ==========================================================================
+  // ROTEIRIZACAO: CALCULO E DESENHO DE TRAJETO REAL PELAS RUAS COM GOOGLE API
+  // ==========================================================================
   /**
-   * Motor gráfico SVG vetorial de Sergipe (Aracaju, São Cristóvão, Litoral e Rios)
-   * Renderiza a geografia e rota de forma interativa caso o Google Maps esteja offline
+   * Calcula e desenha o trajeto real pelas ruas utilizando a geometria da Directions API.
+   * Lógica estrita:
+   * 1. Definir localização do produtor como origem.
+   * 2. Definir entregas como waypoints.
+   * 3. Definir o último destino.
+   * 4. Enviar origem, destino e waypoints para o serviço de rotas do Google.
+   * 5. Receber a rota calculada.
+   * 6. Utilizar a geometria/polilinha retornada pelo Google para desenhar o trajeto.
+   * 7. A linha azul deve acompanhar as ruas e avenidas reais.
+   * 8. Não desenhar linhas retas entre os marcadores.
+   * 9. Exibir a distância real estimada da rota.
+   * 10. Exibir o tempo estimado de deslocamento.
    */
+  async function calcularERenderizarRotaRealGoogle(origem, paradasOrdenadas, bounds) {
+    if (!window.google || !window.google.maps) {
+      console.warn("Google Maps API nao disponivel no momento.");
+      return;
+    }
+
+    // Limpa polylines anteriores
+    gPolylines.forEach(p => p.setMap(null));
+    gPolylines = [];
+
+    // Oculta banner de erro previo
+    const errBanner = document.getElementById("sel-route-error-banner");
+    const errTitle = document.getElementById("sel-route-error-title");
+    const errMsg = document.getElementById("sel-route-error-msg");
+    if (errBanner) errBanner.style.display = "none";
+
+    if (!paradasOrdenadas || paradasOrdenadas.length === 0) {
+      gMapInstance.fitBounds(bounds);
+      return;
+    }
+
+    // Indicador visual de calculo em andamento
+    const distEl = document.getElementById("sel-route-real-dist");
+    const timeEl = document.getElementById("sel-route-real-time");
+    const stopsEl = document.getElementById("sel-route-real-stops");
+    if (distEl) distEl.textContent = "Calculando vias...";
+    if (timeEl) timeEl.textContent = "Estimando transito...";
+    if (stopsEl) stopsEl.textContent = `${paradasOrdenadas.length} paradas`;
+
+    // 1. Definir origem, waypoints e destino
+    const origLat = Number(origem.latitude);
+    const origLng = Number(origem.longitude);
+    const destinoStop = paradasOrdenadas[paradasOrdenadas.length - 1];
+    const destLat = Number(destinoStop.latitude);
+    const destLng = Number(destinoStop.longitude);
+
+    const waypointsIntermediarios = paradasOrdenadas.length > 1 
+      ? paradasOrdenadas.slice(0, paradasOrdenadas.length - 1) 
+      : [];
+
+    let rotaCalculadaComSucesso = false;
+    let erroFinal = null;
+
+    // ------------------------------------------------------------------------
+    // METODO 1: Google Maps Routes Library (Route.computeRoutes via importLibrary)
+    // ------------------------------------------------------------------------
+    try {
+      let routesLib = null;
+      if (typeof google.maps.importLibrary === "function") {
+        routesLib = await google.maps.importLibrary("routes");
+      }
+
+      if (routesLib && routesLib.Route && typeof routesLib.Route.computeRoutes === "function") {
+        const routesRequest = {
+          origin: {
+            location: {
+              latLng: { latitude: origLat, longitude: origLng }
+            }
+          },
+          destination: {
+            location: {
+              latLng: { latitude: destLat, longitude: destLng }
+            }
+          },
+          intermediates: waypointsIntermediarios.map(p => ({
+            location: {
+              latLng: { latitude: Number(p.latitude), longitude: Number(p.longitude) }
+            }
+          })),
+          travelMode: "DRIVE",
+          routingPreference: "TRAFFIC_AWARE",
+          fields: [
+            "routes.polyline.encodedPolyline",
+            "routes.distanceMeters",
+            "routes.duration",
+            "routes.legs"
+          ]
+        };
+
+        const res = await routesLib.Route.computeRoutes(routesRequest);
+        if (res && res.routes && res.routes.length > 0) {
+          const r = res.routes[0];
+          let path = [];
+          if (r.polyline && r.polyline.encodedPolyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
+            path = google.maps.geometry.encoding.decodePath(r.polyline.encodedPolyline);
+          }
+          if (path.length > 0) {
+            desenharPolylineViasReais(path);
+            const distKm = ((r.distanceMeters || 0) / 1000).toFixed(1);
+            const segundos = parseInt(r.duration || "0", 10);
+            const tempoFmt = formatarSegundos(segundos);
+            atualizarMetricasRotaPainel(distKm, tempoFmt, paradasOrdenadas.length);
+            gMapInstance.fitBounds(bounds);
+            rotaCalculadaComSucesso = true;
+            return;
+          }
+        }
+      }
+    } catch (errRoutesLib) {
+      console.warn("Routes Library (computeRoutes) falhou ou indisponivel:", errRoutesLib);
+      erroFinal = errRoutesLib;
+    }
+
+    // ------------------------------------------------------------------------
+    // METODO 2: Google Routes API v2 via REST / fetch (captura erro original de habilitacao/cota)
+    // ------------------------------------------------------------------------
+    if (!rotaCalculadaComSucesso && GOOGLE_MAPS_API_KEY && GOOGLE_MAPS_API_KEY !== "SUA_CHAVE_AQUI") {
+      try {
+        const restUrl = "https://routes.googleapis.com/directions/v2:computeRoutes";
+        const restBody = {
+          origin: {
+            location: { latLng: { latitude: origLat, longitude: origLng } }
+          },
+          destination: {
+            location: { latLng: { latitude: destLat, longitude: destLng } }
+          },
+          intermediates: waypointsIntermediarios.map(p => ({
+            location: { latLng: { latitude: Number(p.latitude), longitude: Number(p.longitude) } }
+          })),
+          travelMode: "DRIVE",
+          routingPreference: "TRAFFIC_AWARE"
+        };
+
+        const restRes = await fetch(restUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
+            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs"
+          },
+          body: JSON.stringify(restBody)
+        });
+
+        if (restRes.ok) {
+          const data = await restRes.json();
+          if (data && data.routes && data.routes.length > 0) {
+            const r = data.routes[0];
+            let path = [];
+            if (r.polyline && r.polyline.encodedPolyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
+              path = google.maps.geometry.encoding.decodePath(r.polyline.encodedPolyline);
+            }
+            if (path.length > 0) {
+              desenharPolylineViasReais(path);
+              const distKm = ((r.distanceMeters || 0) / 1000).toFixed(1);
+              const segundos = parseInt(r.duration || "0", 10);
+              const tempoFmt = formatarSegundos(segundos);
+              atualizarMetricasRotaPainel(distKm, tempoFmt, paradasOrdenadas.length);
+              gMapInstance.fitBounds(bounds);
+              rotaCalculadaComSucesso = true;
+              return;
+            }
+          }
+        } else {
+          const errData = await restRes.json().catch(() => null);
+          const msg = (errData && errData.error && errData.error.message) 
+            ? `[HTTP ${restRes.status} ${errData.error.status || ''}] ${errData.error.message}`
+            : `HTTP ${restRes.status} ${restRes.statusText}`;
+          erroFinal = new Error(msg);
+          console.warn("Routes API REST retornou erro:", msg, errData);
+        }
+      } catch (errRest) {
+        console.warn("Routes API REST fetch falhou:", errRest);
+        if (!erroFinal) erroFinal = errRest;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // METODO 3: Google Maps DirectionsService (legado da Maps JS API)
+    // ------------------------------------------------------------------------
+    if (!rotaCalculadaComSucesso) {
+      if (!gDirectionsService) {
+        gDirectionsService = new google.maps.DirectionsService();
+      }
+
+      const dsRequest = {
+        origin: new google.maps.LatLng(origLat, origLng),
+        destination: new google.maps.LatLng(destLat, destLng),
+        waypoints: waypointsIntermediarios.map(p => ({
+          location: new google.maps.LatLng(Number(p.latitude), Number(p.longitude)),
+          stopover: true
+        })),
+        optimizeWaypoints: false,
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+
+      await new Promise(resolve => {
+        gDirectionsService.route(dsRequest, function (response, status) {
+          if (status === google.maps.DirectionsStatus.OK || status === "OK") {
+            let routePath = [];
+            if (response.routes && response.routes[0]) {
+              const route = response.routes[0];
+              if (route.overview_path && route.overview_path.length > 0) {
+                routePath = route.overview_path;
+              } else if (route.overview_polyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
+                const enc = typeof route.overview_polyline === 'string' ? route.overview_polyline : route.overview_polyline.points;
+                routePath = google.maps.geometry.encoding.decodePath(enc);
+              }
+            }
+
+            if (routePath.length > 0) {
+              desenharPolylineViasReais(routePath);
+            }
+
+            let totalMetros = 0;
+            let totalSegundos = 0;
+            const route = response.routes[0];
+            if (route && route.legs) {
+              route.legs.forEach(leg => {
+                totalMetros += (leg.distance && leg.distance.value) ? leg.distance.value : 0;
+                totalSegundos += (leg.duration && leg.duration.value) ? leg.duration.value : 0;
+              });
+            }
+
+            const distRealKm = (totalMetros / 1000).toFixed(1);
+            const tempoDeslocamentoFormatado = formatarSegundos(totalSegundos);
+
+            atualizarMetricasRotaPainel(distRealKm, tempoDeslocamentoFormatado, paradasOrdenadas.length);
+            gMapInstance.fitBounds(bounds);
+            rotaCalculadaComSucesso = true;
+          } else {
+            // Se falhou em todas as tentativas, registra erro original completo
+            const erroMsg = erroFinal ? erroFinal.message : `DirectionsStatus: ${status}`;
+            console.error("Erro completo ao calcular rota:", erroMsg, { status, erroFinal });
+            exibirErroOriginalAPI(erroMsg, paradasOrdenadas.length);
+            gMapInstance.fitBounds(bounds);
+          }
+          resolve();
+        });
+      });
+    }
+  }
+
+  function desenharPolylineViasReais(path) {
+    gPolylines.forEach(p => p.setMap(null));
+    gPolylines = [];
+
+    const navPolyline = new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: "#1A73E8", // Azul oficial Google Maps
+      strokeOpacity: 0.85,
+      strokeWeight: 5,
+      map: gMapInstance,
+      zIndex: 50
+    });
+    gPolylines.push(navPolyline);
+  }
+
+  function formatarSegundos(totalSegundos) {
+    const totalMin = Math.round(totalSegundos / 60);
+    const horas = Math.floor(totalMin / 60);
+    const mins = totalMin % 60;
+    return horas > 0 ? `${horas}h ${mins.toString().padStart(2, '0')}min` : `${mins} min`;
+  }
+
+  function exibirErroOriginalAPI(erroOriginal, qtdParadas) {
+    const errBanner = document.getElementById("sel-route-error-banner");
+    const errMsg = document.getElementById("sel-route-error-msg");
+    const errTitle = document.getElementById("sel-route-error-title");
+
+    if (errBanner) {
+      if (errTitle) errTitle.textContent = "Erro da API:";
+      if (errMsg) {
+        errMsg.textContent = String(erroOriginal);
+      } else {
+        errBanner.innerHTML = `<strong>Erro da API:</strong> <div>${String(erroOriginal)}</div>`;
+      }
+      errBanner.style.display = "block";
+    }
+
+    const distEl = document.getElementById("sel-route-real-dist");
+    const timeEl = document.getElementById("sel-route-real-time");
+    const stopsEl = document.getElementById("sel-route-real-stops");
+    const metaEl = document.getElementById("sel-route-meta");
+
+    if (distEl) distEl.textContent = "Indisponivel";
+    if (timeEl) timeEl.textContent = "Indisponivel";
+    if (stopsEl) stopsEl.textContent = `${qtdParadas} paradas`;
+
+    if (metaEl) {
+      metaEl.innerHTML = `<span style="color:#DC2626; font-weight:600;">Roteirizacao indisponivel</span> (${String(erroOriginal).substring(0, 45)}) • ${qtdParadas} paradas mantidas`;
+    }
+  }
+
+  function atualizarMetricasRotaPainel(distKm, tempoFormatado, qtdParadas) {
+    const rotaAtual = rotasCalculadas[rotaSelecionadaIndex];
+    const distEl = document.getElementById("sel-route-real-dist");
+    const timeEl = document.getElementById("sel-route-real-time");
+    const stopsEl = document.getElementById("sel-route-real-stops");
+    const metaEl = document.getElementById("sel-route-meta");
+    const errBanner = document.getElementById("sel-route-error-banner");
+
+    if (errBanner) errBanner.style.display = "none";
+    if (distEl) distEl.textContent = `${distKm.replace('.', ',')} km`;
+    if (timeEl) timeEl.textContent = tempoFormatado;
+    if (stopsEl) stopsEl.textContent = `${qtdParadas} paradas`;
+
+    if (metaEl && rotaAtual) {
+      metaEl.textContent = `${qtdParadas} entregas • ${rotaAtual.pesoTotal} kg • ${distKm.replace('.', ',')} km pelas ruas • ${tempoFormatado} de deslocamento`;
+    }
+
+    const kpiDist = document.getElementById("kpi-total-distance");
+    if (kpiDist) {
+      kpiDist.textContent = `${distKm.replace('.', ',')} km`;
+    }
+    const kpiTime = document.getElementById("kpi-total-time");
+    if (kpiTime) {
+      kpiTime.textContent = tempoFormatado;
+    }
+  }
+
   function renderizarMapaFallbackSVG() {
     const container = document.getElementById("logistics-map-canvas");
     if (!container || !rotasCalculadas[rotaSelecionadaIndex]) return;
@@ -2056,7 +2453,7 @@ window.LogisticaModule = (function () {
         <!-- Marcador do Produtor (Origem) -->
         <g class="svg-map-pin" onclick="LogisticaModule.abrirInfoOrigem()" style="cursor:pointer;">
           <circle cx="${ox}" cy="${oy}" r="14" fill="#1E4D2B" stroke="#FFFFFF" stroke-width="2.5" />
-          <text x="${ox}" y="${oy + 4}" font-size="11" fill="#FFFFFF" font-weight="bold" text-anchor="middle">🏡</text>
+          <text x="${ox}" y="${oy + 4}" font-size="11" fill="#FFFFFF" font-weight="bold" text-anchor="middle">P</text>
           <rect x="${ox - 45}" y="${oy - 28}" width="90" height="18" rx="3" fill="#1E4D2B" />
           <text x="${ox}" y="${oy - 16}" font-size="9.5" fill="#FFFFFF" font-weight="bold" text-anchor="middle">${origem.nome.substring(0, 15)}</text>
         </g>
@@ -2072,7 +2469,7 @@ window.LogisticaModule = (function () {
               <!-- Círculo do Marcador com Número da Parada -->
               <circle cx="${pt.x}" cy="${pt.y}" r="13" fill="${cor}" stroke="#FFFFFF" stroke-width="2" />
               <text x="${pt.x}" y="${pt.y + 4}" font-size="11" fill="#FFFFFF" font-weight="bold" text-anchor="middle">
-                ${ped.status === 'Entregue' ? '✓' : ped.sequencia}
+                ${ped.status === 'Entregue' ? 'OK' : ped.sequencia}
               </text>
               <!-- Rótulo do Bairro -->
               <rect x="${pt.x - 30}" y="${pt.y + 16}" width="60" height="15" rx="3" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" opacity="0.95" />
@@ -2224,7 +2621,7 @@ window.LogisticaModule = (function () {
         <div class="stop-card-row ${p.id === paradaSelecionadaId ? 'selected' : ''}" onclick="LogisticaModule.abrirInfoCardPorId('${p.id}')">
           <div class="stop-num-col">
             <span class="stop-num-badge" style="background-color: ${isEntregue ? '#15803D' : rota.cor};">
-              ${isEntregue ? '✓' : p.sequencia.toString().padStart(2, '0')}
+              ${isEntregue ? 'OK' : p.sequencia.toString().padStart(2, '0')}
             </span>
           </div>
 
@@ -2388,7 +2785,7 @@ window.LogisticaModule = (function () {
     const btnAction = document.getElementById("btn-info-action");
     if (btnAction) {
       if (p.status === "Entregue") {
-        btnAction.textContent = "Entrega Já Realizada ✓";
+        btnAction.textContent = "Entrega já realizada";
         btnAction.disabled = true;
         btnAction.style.opacity = "0.7";
       } else {
@@ -2567,3 +2964,556 @@ window.buscarPedidos = buscarPedidos;
 window.buscarProdutores = buscarProdutores;
 window.salvarRota = salvarRota;
 window.atualizarStatusEntrega = atualizarStatusEntrega;
+
+
+
+
+/**
+ * ============================================================================
+ * FEIRA LIVRE+ — MÓDULO DE ASSINATURA EXCLUSIVA PARA CLIENTES / CONSUMIDORES
+ * Gestão do plano Feira Livre+, cálculo de frete grátis, cupons e economia
+ * ============================================================================
+ */
+window.FeiraMaisModule = (function () {
+
+  // 1. CONFIGURAÇÃO GERAL DO FEIRA LIVRE+ (Preço e limites configuráveis)
+  const CONFIG = {
+    planoId: "feiramais",
+    nome: "Feira Livre+",
+    subtitulo: "Mais vantagens para comprar de produtores locais.",
+    precoMensal: 9.90, // Configurável no sistema
+    precoFormatado: "R$ 9,90",
+    ciclo: "mensal",
+    pedidoMinimoFreteGratis: 50.00, // Frete grátis em pedidos >= R$ 50,00
+    fretePadrao: 8.00,
+    cupomExclusivo: "FEIRAMAIS10",
+    descontoCupomPercentual: 0.10
+  };
+
+  // 2. ESTADO DA ASSINATURA DO CLIENTE ATUAL (Persistido no localStorage)
+  function carregarAssinaturaLocal() {
+    try {
+      const salvo = localStorage.getItem("FEIRALIVRE_CLIENTE_ASSINATURA");
+      if (salvo) return JSON.parse(salvo);
+    } catch(e) {}
+    
+    // Estado inicial de demonstração (plano gratuito padrão)
+    return {
+      idAssinatura: "SUB-CLI-FREE-1",
+      clienteId: 1,
+      plano: "gratuito",
+      valor: 0.00,
+      status: "gratuita", // gratuita, ativa, pendente, cancelada, vencida, suspensa
+      dataInicio: "-",
+      dataProximaCobranca: "-",
+      dataCancelamento: "",
+      gateway: "gratuito",
+      gatewaySubscriptionId: "",
+      metodo: "Gratuito"
+    };
+  }
+
+  function salvarAssinaturaLocal(sub) {
+    try {
+      localStorage.setItem("FEIRALIVRE_CLIENTE_ASSINATURA", JSON.stringify(sub));
+    } catch(e) {}
+  }
+
+  let clienteAssinatura = carregarAssinaturaLocal();
+
+  // Histórico de mensalidades pagas pelo cliente
+  let historicoPagamentos = [
+    {
+      idPagamento: "PAG-CLI-8901",
+      idAssinatura: "SUB-CLI-9901",
+      clienteId: 1,
+      valor: 9.90,
+      data: "2026-09-19",
+      status: "aprovado",
+      metodo: "Cartao de Credito"
+    }
+  ];
+
+  // Registro de economia
+  let economiaRegistro = {
+    fretesGratisUsados: 3,
+    descontoFreteTotal: 24.00,
+    descontoCuponsTotal: 63.50,
+    economiaTotal: 87.50,
+    mensalidadesPagas: 9.90
+  };
+
+  /**
+   * Inicialização do módulo
+   */
+  async function init() {
+    atualizarPrecoExibicao();
+    renderizarPainelCliente();
+    renderizarEconomia();
+    renderizarHistoricoPagamentos();
+    atualizarBotaoHeaderStatus();
+  }
+
+  function atualizarPrecoExibicao() {
+    const elPrice = document.getElementById("fl-price-display");
+    if (elPrice) {
+      elPrice.textContent = CONFIG.precoMensal.toFixed(2).replace('.', ',');
+    }
+  }
+
+  /**
+   * Verifica se o cliente possui plano Feira Livre+ ativo ou em cancelamento vigente
+   */
+  function isClienteAssinante() {
+    const st = String(clienteAssinatura.status || "gratuita").toLowerCase();
+    return st === "ativa" || st === "cancelada";
+  }
+
+  /**
+   * Consulta pública de status e regras para o restante da aplicação
+   */
+  function verificarAssinaturaCliente() {
+    return {
+      isAssinante: isClienteAssinante(),
+      status: clienteAssinatura.status,
+      plano: clienteAssinatura.plano,
+      valor: clienteAssinatura.valor,
+      dataProximaCobranca: clienteAssinatura.dataProximaCobranca,
+      regraFreteGratis: CONFIG.pedidoMinimoFreteGratis
+    };
+  }
+
+  /**
+   * Cálculo dos benefícios aplicáveis ao carrinho de compras
+   */
+  function calcularBeneficiosCarrinho(subtotal) {
+    const isAssinante = isClienteAssinante();
+    const valSubtotal = parseFloat(subtotal || 0);
+    const freteNormal = CONFIG.fretePadrao;
+
+    if (isAssinante && valSubtotal >= CONFIG.pedidoMinimoFreteGratis) {
+      return {
+        freteFinal: 0.00,
+        descontoFrete: freteNormal,
+        elegivelFreteGratis: true,
+        mensagem: "Frete gratis com Feira Livre+ aplicado!"
+      };
+    }
+
+    const faltaParaFrete = isAssinante ? Math.max(0, CONFIG.pedidoMinimoFreteGratis - valSubtotal) : 0;
+
+    return {
+      freteFinal: freteNormal,
+      descontoFrete: 0.00,
+      elegivelFreteGratis: false,
+      faltaParaFrete: faltaParaFrete,
+      mensagem: isAssinante 
+        ? `Adicione mais R$ ${faltaParaFrete.toFixed(2).replace('.', ',')} para ganhar Frete Gratis com Feira Livre+` 
+        : "Economize no frete assinando o Feira Livre+ por R$ 9,90/mes"
+    };
+  }
+
+  /**
+   * Validação de cupom exclusivo para assinantes
+   */
+  function validarCupomExclusivo(codigo) {
+    const cod = String(codigo || "").trim().toUpperCase();
+    if (cod === CONFIG.cupomExclusivo) {
+      if (!isClienteAssinante()) {
+        return {
+          valido: false,
+          mensagem: "O cupom FEIRAMAIS10 e exclusivo para assinantes Feira Livre+. Assine por R$ 9,90/mes para liberar este desconto!"
+        };
+      }
+      return {
+        valido: true,
+        percentual: CONFIG.descontoCupomPercentual,
+        mensagem: "Cupom Feira Livre+ de 10% OFF aplicado com sucesso!"
+      };
+    }
+    return null; // Não é cupom exclusivo do clube
+  }
+
+  /**
+   * Atualização da interface da seção Minha Assinatura
+   */
+  function renderizarPainelCliente() {
+    const isAssinante = isClienteAssinante();
+    const st = clienteAssinatura.status || "gratuita";
+
+    const elTitle = document.getElementById("cli-sub-title");
+    const elBadge = document.getElementById("cli-sub-status-badge");
+    const elPlanoNome = document.getElementById("cli-sub-plano-nome");
+    const elValor = document.getElementById("cli-sub-valor");
+    const elProx = document.getElementById("cli-sub-proxima-data");
+    const elInicio = document.getElementById("cli-sub-inicio-data");
+    const elAlert = document.getElementById("cli-sub-alert");
+
+    const btnAssinar = document.getElementById("btn-cli-assinar-toggle");
+    const btnCancelar = document.getElementById("btn-cli-cancelar-sub");
+    const btnReativar = document.getElementById("btn-cli-reativar-sub");
+    const btnCtaHero = document.getElementById("btn-cta-feiramais");
+
+    if (elTitle) elTitle.textContent = isAssinante ? "Minha Assinatura Feira Livre+" : "Minha Assinatura (Cliente)";
+    if (elPlanoNome) elPlanoNome.textContent = isAssinante ? "Feira Livre+" : "Plano Gratuito";
+    if (elValor) elValor.textContent = isAssinante ? `${CONFIG.precoFormatado} /mes` : "R$ 0,00 /mes";
+    if (elProx) elProx.textContent = clienteAssinatura.dataProximaCobranca || "-";
+    if (elInicio) elInicio.textContent = formatarDataBR(clienteAssinatura.dataInicio);
+
+    if (elBadge) {
+      elBadge.className = `sub-badge ${st}`;
+      const rotulos = {
+        ativa: "Ativa",
+        gratuita: "Gratuita",
+        cancelada: "Cancelada",
+        suspensa: "Suspensa",
+        vencida: "Vencida"
+      };
+      elBadge.textContent = rotulos[st] || st.toUpperCase();
+    }
+
+    if (elAlert) {
+      if (st === "cancelada") {
+        elAlert.style.display = "block";
+        elAlert.textContent = `Sua assinatura foi cancelada. Os beneficios continuam ativos ate ${clienteAssinatura.dataProximaCobranca}.`;
+      } else {
+        elAlert.style.display = "none";
+      }
+    }
+
+    if (btnAssinar) {
+      btnAssinar.style.display = isAssinante ? "none" : "inline-block";
+      btnAssinar.textContent = "Assinar Feira Livre+";
+    }
+    if (btnCancelar) {
+      btnCancelar.style.display = (st === "ativa") ? "inline-block" : "none";
+    }
+    if (btnReativar) {
+      btnReativar.style.display = (st === "cancelada" || st === "suspensa") ? "inline-block" : "none";
+    }
+    if (btnCtaHero) {
+      btnCtaHero.textContent = isAssinante ? "Assinatura Ja Ativa" : "Assinar Feira Livre+";
+      btnCtaHero.disabled = isAssinante;
+      btnCtaHero.style.opacity = isAssinante ? "0.75" : "1";
+    }
+
+    const tagGratuito = document.getElementById("tag-plano-gratuito-ativo");
+    if (tagGratuito) {
+      tagGratuito.textContent = isAssinante ? "Plano Basico" : "Seu Plano Atual";
+    }
+  }
+
+  /**
+   * Renderiza os dados do painel de economia do cliente
+   */
+  function renderizarEconomia() {
+    const ecoMes = document.getElementById("eco-mes-val");
+    const ecoTotal = document.getElementById("eco-total-val");
+    const ecoCusto = document.getElementById("eco-custo-val");
+    const ecoLiq = document.getElementById("eco-liquida-val");
+
+    if (ecoMes) ecoMes.textContent = `R$ ${economiaRegistro.descontoFreteTotal.toFixed(2).replace('.', ',')}`;
+    if (ecoTotal) ecoTotal.textContent = `R$ ${economiaRegistro.economiaTotal.toFixed(2).replace('.', ',')}`;
+    if (ecoCusto) ecoCusto.textContent = `R$ ${CONFIG.precoMensal.toFixed(2).replace('.', ',')}`;
+    
+    const liquido = Math.max(0, economiaRegistro.economiaTotal - CONFIG.precoMensal);
+    if (ecoLiq) ecoLiq.textContent = `R$ ${liquido.toFixed(2).replace('.', ',')}`;
+  }
+
+  /**
+   * Renderiza a tabela de pagamentos de mensalidade do cliente
+   */
+  function renderizarHistoricoPagamentos() {
+    const tbody = document.getElementById("client-sub-invoices-tbody");
+    if (!tbody) return;
+
+    if (!isClienteAssinante() && historicoPagamentos.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; color:var(--text-muted); padding:16px;">
+            Nenhuma mensalidade registrada. Assine o Feira Livre+ para comecar a economizar!
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = historicoPagamentos.map(p => `
+      <tr>
+        <td style="font-family:monospace; font-weight:600;">${p.idPagamento}</td>
+        <td>${formatarDataBR(p.data)}</td>
+        <td style="font-weight:700; color:var(--primary);">R$ ${parseFloat(p.valor).toFixed(2).replace('.', ',')}</td>
+        <td>${p.metodo}</td>
+        <td><span class="sub-badge ativa">Pago</span></td>
+      </tr>
+    `).join('');
+  }
+
+  /**
+   * Atualiza o botão de status no topo da página
+   */
+  function atualizarBotaoHeaderStatus() {
+    const btn = document.getElementById("btn-client-clube-status");
+    if (!btn) return;
+
+    if (isClienteAssinante()) {
+      btn.className = "btn-sub-client-badge active-plus";
+      btn.textContent = "Feira Livre+ Ativo";
+    } else {
+      btn.className = "btn-sub-client-badge";
+      btn.textContent = "Feira Livre+";
+    }
+  }
+
+  /**
+   * Fluxo de Checkout de Assinatura do Cliente
+   */
+  function iniciarCheckout() {
+    const modal = document.getElementById("modal-checkout-feiramais");
+    if (!modal) return;
+
+    const elData = document.getElementById("chk-cli-proxima-data");
+    const prox = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    if (elData) elData.textContent = formatarDataBR(prox.toISOString().split('T')[0]);
+
+    modal.style.display = "flex";
+  }
+
+  function fecharCheckout() {
+    const modal = document.getElementById("modal-checkout-feiramais");
+    if (modal) modal.style.display = "none";
+  }
+
+  /**
+   * Confirmação da assinatura do cliente (Simulação em Modo Demonstração)
+   */
+  async function confirmarAssinatura() {
+    const btn = document.getElementById("btn-cli-confirmar-sub");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Ativando Feira Livre+...";
+    }
+
+    const now = new Date();
+    const proxima = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const metodoSelect = document.getElementById("chk-cli-metodo");
+    const metodo = metodoSelect ? metodoSelect.value : "Cartao de Credito";
+
+    const novaAssinatura = {
+      idAssinatura: "SUB-CLI-" + Date.now().toString().slice(-6),
+      clienteId: 1,
+      plano: "feiramais",
+      valor: CONFIG.precoMensal,
+      status: "ativa",
+      dataInicio: now.toISOString().split('T')[0],
+      dataProximaCobranca: proxima.toISOString().split('T')[0],
+      dataCancelamento: "",
+      gateway: "simulado_modo_demo",
+      gatewaySubscriptionId: "gw_sub_" + Date.now(),
+      metodo: metodo
+    };
+
+    // Chamada à API se houver backend configurado
+    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+      try {
+        await apiCall("criarAssinaturaCliente", "POST", novaAssinatura);
+      } catch(e) {
+        console.warn("Assinatura cliente: backend offline, ativado no modo demonstracao local.");
+      }
+    }
+
+    clienteAssinatura = novaAssinatura;
+    salvarAssinaturaLocal(clienteAssinatura);
+
+    // Adiciona fatura ao histórico
+    historicoPagamentos.unshift({
+      idPagamento: "PAG-CLI-" + Date.now().toString().slice(-4),
+      idAssinatura: novaAssinatura.idAssinatura,
+      clienteId: 1,
+      valor: CONFIG.precoMensal,
+      data: now.toISOString().split('T')[0],
+      status: "aprovado",
+      metodo: metodo
+    });
+
+    fecharCheckout();
+    renderizarPainelCliente();
+    renderizarEconomia();
+    renderizarHistoricoPagamentos();
+    atualizarBotaoHeaderStatus();
+
+    // Atualiza o carrinho se estiver aberto
+    if (typeof renderCartDrawer === "function") {
+      renderCartDrawer();
+    }
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Confirmar assinatura";
+    }
+
+    if (typeof showToast === "function") {
+      showToast("Feira Livre+ ativado com sucesso!");
+    }
+  }
+
+  /**
+   * Modal de Cancelamento
+   */
+  function abrirModalCancelar() {
+    const modal = document.getElementById("modal-cancelar-feiramais");
+    const elPeriodo = document.getElementById("cancel-cli-periodo");
+    if (elPeriodo) {
+      elPeriodo.textContent = clienteAssinatura.dataProximaCobranca || "fim do periodo pago";
+    }
+    if (modal) modal.style.display = "flex";
+  }
+
+  function fecharCancelar() {
+    const modal = document.getElementById("modal-cancelar-feiramais");
+    if (modal) modal.style.display = "none";
+  }
+
+  async function confirmarCancelamento() {
+    clienteAssinatura.status = "cancelada";
+    clienteAssinatura.dataCancelamento = new Date().toISOString().split('T')[0];
+    salvarAssinaturaLocal(clienteAssinatura);
+
+    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+      try {
+        await apiCall("cancelarAssinaturaCliente", "POST", { idAssinatura: clienteAssinatura.idAssinatura, clienteId: 1 });
+      } catch(e) {}
+    }
+
+    fecharCancelar();
+    renderizarPainelCliente();
+    atualizarBotaoHeaderStatus();
+
+    if (typeof showToast === "function") {
+      showToast("Sua assinatura foi cancelada. Os beneficios continuam ativos ate o final do periodo ja pago.");
+    }
+  }
+
+  /**
+   * Reativação da assinatura
+   */
+  async function reativarAssinatura() {
+    clienteAssinatura.status = "ativa";
+    clienteAssinatura.dataCancelamento = "";
+    const proxima = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    clienteAssinatura.dataProximaCobranca = proxima.toISOString().split('T')[0];
+    salvarAssinaturaLocal(clienteAssinatura);
+
+    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+      try {
+        await apiCall("reativarAssinaturaCliente", "POST", { idAssinatura: clienteAssinatura.idAssinatura, clienteId: 1 });
+      } catch(e) {}
+    }
+
+    renderizarPainelCliente();
+    atualizarBotaoHeaderStatus();
+
+    if (typeof showToast === "function") {
+      showToast("Assinatura Feira Livre+ reativada com sucesso.");
+    }
+  }
+
+  /**
+   * Registra economia adicional quando um pedido com frete grátis ou cupom é finalizado
+   */
+  function registrarEconomiaPedido(descontoFrete, descontoCupom) {
+    if (descontoFrete > 0) {
+      economiaRegistro.fretesGratisUsados += 1;
+      economiaRegistro.descontoFreteTotal += descontoFrete;
+      economiaRegistro.economiaTotal += descontoFrete;
+    }
+    if (descontoCupom > 0) {
+      economiaRegistro.descontoCuponsTotal += descontoCupom;
+      economiaRegistro.economiaTotal += descontoCupom;
+    }
+    renderizarEconomia();
+  }
+
+  function formatarDataBR(dataStr) {
+    if (!dataStr || dataStr === "-") return "-";
+    const p = String(dataStr).split('-');
+    if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+    return dataStr;
+  }
+
+  // API Pública do Módulo
+  return {
+    init,
+    isClienteAssinante,
+    verificarAssinaturaCliente,
+    calcularBeneficiosCarrinho,
+    validarCupomExclusivo,
+    iniciarCheckout,
+    fecharCheckout,
+    confirmarAssinatura,
+    abrirModalCancelar,
+    fecharCancelar,
+    confirmarCancelamento,
+    reativarAssinatura,
+    registrarEconomiaPedido,
+    getConfig: () => CONFIG
+  };
+
+})();
+
+window.verificarAssinaturaCliente = function() {
+  if (window.FeiraMaisModule && typeof window.FeiraMaisModule.verificarAssinaturaCliente === 'function') {
+    return window.FeiraMaisModule.verificarAssinaturaCliente();
+  }
+  return { isAssinante: false, status: 'gratuita' };
+};
+
+
+
+function renderMeusProdutosCadastrados() {
+  const tbody = document.getElementById("producer-products-tbody");
+  if (!tbody) return;
+
+  const sel = document.getElementById("sel-active-producer");
+  const pid = sel ? parseInt(sel.value, 10) : 1;
+
+  const prods = (typeof produtos !== "undefined" ? produtos : []).filter(p => p.produtor_id === pid);
+
+  if (prods.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">
+          Nenhum alimento cadastrado por este produtor ate o momento.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const catMap = { 1: "Vegetais", 2: "Frutas", 3: "Raizes", 4: "Folhas", 5: "Graos", 6: "Laticinios", 7: "Ovos", 8: "Mel", 9: "Artesanais" };
+
+  tbody.innerHTML = prods.map(p => `
+    <tr>
+      <td><strong>${p.nome}</strong></td>
+      <td>${catMap[p.categoria_id] || 'Geral'}</td>
+      <td>R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')} / ${p.unidade}</td>
+      <td>${p.estoque} un</td>
+      <td>${p.organico ? '<span style="color:#15803D; font-weight:600;">Organico</span>' : 'Convencional'}</td>
+      <td><span class="sub-badge ativa">Ativo</span></td>
+    </tr>
+  `).join('');
+}
+
+function selecionarProdutorPainel(id) {
+  renderMeusProdutosCadastrados();
+  const nomes = {
+    1: "Fazenda Boa Vista",
+    2: "Atelie Fibra Criativa",
+    3: "Apiario Doce Mel",
+    4: "Sitio Verde Vivo",
+    5: "Sabores da Roca"
+  };
+  if (typeof showToast === "function") {
+    showToast(`Painel do produtor: ${nomes[id] || 'Produtor ' + id}`);
+  }
+}

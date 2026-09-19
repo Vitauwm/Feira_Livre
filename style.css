@@ -2525,3 +2525,465 @@ button, input, select, textarea {
     font-size: 11px;
   }
 }
+
+/* Painel de Metricas da Rota em Vias Reais */
+.route-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+  background: var(--bg-subtle);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.route-metric-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.route-metric-pill small {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.route-metric-pill strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.route-error-banner {
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.route-error-banner strong {
+  display: block;
+  font-size: 13px;
+  color: #7F1D1D;
+  margin-bottom: 4px;
+}
+
+.route-error-banner div {
+  margin: 0;
+  word-break: break-word;
+  font-family: monospace;
+  font-size: 11.5px;
+}
+
+@media (max-width: 480px) {
+  .route-metrics-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* ============================================================================
+ * MÓDULO FEIRA LIVRE+ — ASSINATURA EXCLUSIVA PARA CLIENTES / CONSUMIDORES
+ * ============================================================================ */
+
+.feiramais-hero {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+
+.feiramais-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  background-color: #E8F5E9;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.feiramais-hero h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 8px;
+}
+
+.feiramais-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0 0 10px;
+}
+
+.feiramais-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.feiramais-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 24px;
+  max-width: 840px;
+  margin: 0 auto 36px;
+  align-items: stretch;
+}
+
+.feiramais-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.feiramais-card:hover {
+  border-color: #A5D6A7;
+  box-shadow: var(--shadow-md);
+}
+
+.feiramais-card.featured {
+  border: 2px solid var(--primary);
+  box-shadow: 0 6px 24px rgba(30, 77, 43, 0.14);
+}
+
+.feiramais-badge-featured {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.feiramais-card-top h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 6px;
+}
+
+.feiramais-card-top p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+  min-height: 36px;
+  line-height: 1.4;
+}
+
+.feiramais-price-box {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+}
+
+.feiramais-price-box .currency {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.feiramais-price-box .amount {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.feiramais-price-box.featured .amount {
+  color: var(--primary);
+}
+
+.feiramais-price-box .period {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.feiramais-benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+.feiramais-benefits-list li {
+  font-size: 13px;
+  color: var(--text-main);
+  padding: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.4;
+  border-bottom: 1px solid #F9FAFB;
+}
+
+.feiramais-benefits-list li .check-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #E8F5E9;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.feiramais-benefits-list li.disabled {
+  color: #9CA3AF;
+  text-decoration: line-through;
+}
+
+.feiramais-benefits-list li.disabled .check-dot {
+  background-color: #F3F4F6;
+  color: #9CA3AF;
+}
+
+.feiramais-card-footer {
+  margin-top: auto;
+}
+
+.btn-feiramais-cta {
+  width: 100%;
+  padding: 12px;
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  transition: background-color var(--transition-fast);
+  text-align: center;
+}
+
+.btn-feiramais-cta:hover {
+  background-color: var(--primary-hover);
+}
+
+.plan-current-tag {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* Painel de Minha Assinatura e Economia do Cliente */
+.feiramais-dashboard-area {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.client-sub-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.client-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 18px;
+}
+
+.client-sub-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px;
+}
+
+.client-sub-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.client-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.client-sub-item {
+  background-color: var(--bg-subtle);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.client-sub-item small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.client-sub-item strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+/* Painel da Economia do Cliente */
+.economy-stats-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.economy-stats-card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 6px;
+}
+
+.economy-stats-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+
+.economy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.economy-box {
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.economy-box.cost {
+  background-color: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.economy-box.net {
+  background-color: #ECFDF5;
+  border-color: #6EE7B7;
+}
+
+.economy-box small {
+  display: block;
+  font-size: 11px;
+  color: #065F46;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.economy-box.cost small {
+  color: #64748B;
+}
+
+.economy-box strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #047857;
+}
+
+.economy-box.cost strong {
+  color: #334155;
+}
+
+/* Badge no Carrinho */
+.cart-feiramais-badge {
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: #15803D;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.cart-feiramais-badge.alert {
+  background-color: #FFFBEB;
+  border-color: #FDE68A;
+  color: #B45309;
+}
+
+/* Botão de Status no Header */
+.btn-sub-client-badge {
+  padding: 6px 12px;
+  min-height: 32px;
+  background-color: #E8F5E9;
+  border: 1px solid #A5D6A7;
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-sub-client-badge:hover {
+  background-color: #C8E6C9;
+}
+
+.btn-sub-client-badge.active-plus {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
