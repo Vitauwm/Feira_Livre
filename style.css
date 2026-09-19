@@ -1618,3 +1618,910 @@ button, input, select, textarea {
     display: none;
   }
 }
+
+/* ==========================================================================
+   15. MÓDULO DE LOGÍSTICA & ROTEIRIZAÇÃO INTELIGENTE
+   ========================================================================== */
+
+/* Barra de Título e Ação do Módulo */
+.logistics-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.logistics-badge-demo {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.logistics-header-info h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.logistics-header-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  max-width: 760px;
+}
+
+.btn-simulate-route {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  min-height: 42px;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-simulate-route:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-simulate-route:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Barra de Configurações Operacionais (Origem e Veículo) */
+.logistics-config-bar {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.8fr;
+  gap: 12px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.logistics-config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logistics-config-item label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.logistics-config-item select {
+  height: 38px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--text-main);
+  background-color: #FFFFFF;
+  width: 100%;
+}
+
+.logistics-config-item select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* Feedback Animado da Simulação */
+.logistics-sim-feedback {
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1E40AF;
+  font-weight: 500;
+}
+
+.sim-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2563EB;
+  display: inline-block;
+  animation: pulse 1.2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Grid de Layout Principal (Desktop 2 colunas: Painel / Mapa) */
+.logistics-layout-grid {
+  display: grid;
+  grid-template-columns: 430px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.logistics-sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Card de KPIs e Métricas */
+.logistics-kpi-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.logistics-kpi-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.kpi-item {
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kpi-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+/* Barra de Ocupação do Veículo */
+.vehicle-load-bar-wrap {
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.load-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.load-bar-track {
+  width: 100%;
+  height: 6px;
+  background-color: #E5E7EB;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.load-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+/* Seletor de Rotas */
+.logistics-routes-selector h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.routes-tab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-tab-card {
+  width: 100%;
+  text-align: left;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid #1E4D2B;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.route-tab-card:hover {
+  border-color: #9CA3AF;
+}
+
+.route-tab-card.active {
+  background-color: #F8FAF8;
+  border-color: #9CA3AF;
+  box-shadow: var(--shadow-sm);
+}
+
+.route-tab-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.route-status-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.route-status-pill.pendente {
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+
+.route-status-pill.em-rota {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.route-status-pill.concluída {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.route-tab-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+/* Card de Detalhes da Rota Selecionada */
+.selected-route-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.selected-route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 12px;
+}
+
+.selected-route-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.selected-route-header span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.selected-route-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-route-action {
+  padding: 6px 12px;
+  min-height: 34px;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-route-action:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-route-action.in-progress {
+  background-color: #2563EB;
+}
+
+.btn-route-action.completed {
+  background-color: #15803D;
+}
+
+.btn-open-gmaps {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  min-height: 34px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.btn-open-gmaps:hover {
+  background-color: var(--bg-subtle);
+  border-color: #9CA3AF;
+}
+
+/* Sequência de Paradas */
+.stops-sequence-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stops-list-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.stop-item-farm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-sm);
+}
+
+.stop-badge-farm {
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: #15803D;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.stop-info-content strong {
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.stop-info-content p {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.stop-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.stop-card-row:hover {
+  border-color: #9CA3AF;
+  background-color: #FBFDFB;
+}
+
+.stop-card-row.selected {
+  border-color: var(--primary);
+  background-color: #F3F8F4;
+}
+
+.stop-num-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stop-main-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.stop-client-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.stop-client-row strong {
+  font-size: 13px;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.status-tag-pendente {
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+
+.status-tag-rota {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-tag-entregue {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.stop-addr-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.stop-items-preview {
+  font-size: 11px;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.stop-kpi-footer {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stop-actions-col {
+  flex-shrink: 0;
+}
+
+.btn-mark-delivered {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.btn-mark-delivered:hover {
+  background-color: #15803D;
+  color: #FFFFFF;
+  border-color: #15803D;
+}
+
+/* ==========================================================================
+   ÁREA DO MAPA & CONTROLES FLUTUANTES
+   ========================================================================== */
+.logistics-map-wrapper {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-controls-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.map-mode-indicator {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.engine-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #9CA3AF;
+}
+
+.engine-dot.live {
+  background-color: #15803D;
+}
+
+.engine-dot.demo {
+  background-color: #2563EB;
+}
+
+.map-view-actions {
+  pointer-events: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-map-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-map-control:hover {
+  background-color: #FFFFFF;
+  border-color: #9CA3AF;
+}
+
+/* Canvas do Mapa */
+.logistics-map-canvas {
+  width: 100%;
+  height: 600px;
+  background-color: #F4F7F4;
+  position: relative;
+}
+
+.svg-logistics-map {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Barra de Legenda do Mapa */
+.map-legend-bar {
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.legend-pin-farm {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #1E4D2B;
+  display: inline-block;
+}
+
+/* Card Flutuante de Informações da Parada */
+.map-stop-infocard {
+  position: absolute;
+  bottom: 45px;
+  right: 14px;
+  width: 320px;
+  max-width: calc(100% - 28px);
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.infocard-header {
+  padding: 10px 12px;
+  background-color: var(--bg-page);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infocard-stop-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  display: block;
+}
+
+.infocard-client {
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.infocard-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.infocard-close:hover {
+  color: var(--text-main);
+}
+
+.infocard-body {
+  padding: 12px;
+}
+
+.infocard-addr {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.infocard-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.infotag {
+  font-size: 10px;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  color: var(--text-muted);
+}
+
+.infotag-status {
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+
+.infotag-status.pendente { background-color: #FEF3C7; color: #B45309; }
+.infotag-status.em-rota { background-color: #DBEAFE; color: #1E40AF; }
+.infotag-status.entregue { background-color: #DCFCE7; color: #15803D; }
+
+.infocard-products {
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.infocard-prod-title {
+  display: block;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.infocard-products p {
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.infocard-actions {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border-subtle);
+  background-color: #FFFFFF;
+}
+
+.btn-infocard-action {
+  width: 100%;
+  padding: 7px;
+  background-color: #15803D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-infocard-action:hover {
+  background-color: #166534;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE DO MÓDULO DE LOGÍSTICA (MOBILE: 320px a 768px)
+   ========================================================================== */
+@media (max-width: 860px) {
+  .logistics-config-bar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .logistics-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* No celular, o mapa sobe para o topo e o painel fica abaixo */
+  .logistics-map-wrapper {
+    order: 1;
+  }
+
+  .logistics-sidebar-panel {
+    order: 2;
+  }
+
+  .logistics-map-canvas {
+    height: 360px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .selected-route-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selected-route-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-route-action, .btn-open-gmaps {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-simulate-route {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .logistics-header-bar {
+    padding: 14px;
+  }
+  .logistics-header-info h2 {
+    font-size: 16px;
+  }
+  .logistics-map-canvas {
+    height: 310px;
+  }
+  .map-controls-overlay {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .map-view-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .btn-map-control {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
