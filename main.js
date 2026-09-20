@@ -326,6 +326,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderProdutos();
   renderProdutores();
   updateCartUI();
+  
+  // Força a atualização da view atual para garantir que os itens sejam exibidos corretamente
+  switchView(currentView);
   if (
     window.FeiraMaisModule &&
     typeof window.FeiraMaisModule.init === "function"
