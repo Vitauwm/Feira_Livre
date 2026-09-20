@@ -1,4 +1,3 @@
-
 /**
  * ============================================================================
  * FEIRA LIVRE+ — MÓDULO DE ASSINATURA EXCLUSIVA PARA CLIENTES / CONSUMIDORES
@@ -6,19 +5,18 @@
  * ============================================================================
  */
 window.FeiraMaisModule = (function () {
-
   // 1. CONFIGURAÇÃO GERAL DO FEIRA LIVRE+ (Preço e limites configuráveis)
   const CONFIG = {
     planoId: "feiramais",
     nome: "Feira Livre+",
     subtitulo: "Mais vantagens para comprar de produtores locais.",
-    precoMensal: 9.90, // Configurável no sistema
+    precoMensal: 9.9, // Configurável no sistema
     precoFormatado: "R$ 9,90",
     ciclo: "mensal",
-    pedidoMinimoFreteGratis: 50.00, // Frete grátis em pedidos >= R$ 50,00
-    fretePadrao: 8.00,
+    pedidoMinimoFreteGratis: 50.0, // Frete grátis em pedidos >= R$ 50,00
+    fretePadrao: 8.0,
     cupomExclusivo: "FEIRAMAIS10",
-    descontoCupomPercentual: 0.10
+    descontoCupomPercentual: 0.1,
   };
 
   // 2. ESTADO DA ASSINATURA DO CLIENTE ATUAL (Persistido no localStorage)
@@ -26,28 +24,31 @@ window.FeiraMaisModule = (function () {
     try {
       const salvo = localStorage.getItem("FEIRALIVRE_CLIENTE_ASSINATURA");
       if (salvo) return JSON.parse(salvo);
-    } catch(e) {}
-    
+    } catch (e) {}
+
     // Estado inicial de demonstração (plano gratuito padrão)
     return {
       idAssinatura: "SUB-CLI-FREE-1",
       clienteId: 1,
       plano: "gratuito",
-      valor: 0.00,
+      valor: 0.0,
       status: "gratuita", // gratuita, ativa, pendente, cancelada, vencida, suspensa
       dataInicio: "-",
       dataProximaCobranca: "-",
       dataCancelamento: "",
       gateway: "gratuito",
       gatewaySubscriptionId: "",
-      metodo: "Gratuito"
+      metodo: "Gratuito",
     };
   }
 
   function salvarAssinaturaLocal(sub) {
     try {
-      localStorage.setItem("FEIRALIVRE_CLIENTE_ASSINATURA", JSON.stringify(sub));
-    } catch(e) {}
+      localStorage.setItem(
+        "FEIRALIVRE_CLIENTE_ASSINATURA",
+        JSON.stringify(sub),
+      );
+    } catch (e) {}
   }
 
   let clienteAssinatura = carregarAssinaturaLocal();
@@ -58,20 +59,20 @@ window.FeiraMaisModule = (function () {
       idPagamento: "PAG-CLI-8901",
       idAssinatura: "SUB-CLI-9901",
       clienteId: 1,
-      valor: 9.90,
+      valor: 9.9,
       data: "2026-09-19",
       status: "aprovado",
-      metodo: "Cartao de Credito"
-    }
+      metodo: "Cartao de Credito",
+    },
   ];
 
   // Registro de economia
   let economiaRegistro = {
     fretesGratisUsados: 3,
-    descontoFreteTotal: 24.00,
-    descontoCuponsTotal: 63.50,
-    economiaTotal: 87.50,
-    mensalidadesPagas: 9.90
+    descontoFreteTotal: 24.0,
+    descontoCuponsTotal: 63.5,
+    economiaTotal: 87.5,
+    mensalidadesPagas: 9.9,
   };
 
   /**
@@ -88,7 +89,7 @@ window.FeiraMaisModule = (function () {
   function atualizarPrecoExibicao() {
     const elPrice = document.getElementById("fl-price-display");
     if (elPrice) {
-      elPrice.textContent = CONFIG.precoMensal.toFixed(2).replace('.', ',');
+      elPrice.textContent = CONFIG.precoMensal.toFixed(2).replace(".", ",");
     }
   }
 
@@ -110,7 +111,7 @@ window.FeiraMaisModule = (function () {
       plano: clienteAssinatura.plano,
       valor: clienteAssinatura.valor,
       dataProximaCobranca: clienteAssinatura.dataProximaCobranca,
-      regraFreteGratis: CONFIG.pedidoMinimoFreteGratis
+      regraFreteGratis: CONFIG.pedidoMinimoFreteGratis,
     };
   }
 
@@ -124,23 +125,25 @@ window.FeiraMaisModule = (function () {
 
     if (isAssinante && valSubtotal >= CONFIG.pedidoMinimoFreteGratis) {
       return {
-        freteFinal: 0.00,
+        freteFinal: 0.0,
         descontoFrete: freteNormal,
         elegivelFreteGratis: true,
-        mensagem: "Frete gratis com Feira Livre+ aplicado!"
+        mensagem: "Frete gratis com Feira Livre+ aplicado!",
       };
     }
 
-    const faltaParaFrete = isAssinante ? Math.max(0, CONFIG.pedidoMinimoFreteGratis - valSubtotal) : 0;
+    const faltaParaFrete = isAssinante
+      ? Math.max(0, CONFIG.pedidoMinimoFreteGratis - valSubtotal)
+      : 0;
 
     return {
       freteFinal: freteNormal,
-      descontoFrete: 0.00,
+      descontoFrete: 0.0,
       elegivelFreteGratis: false,
       faltaParaFrete: faltaParaFrete,
-      mensagem: isAssinante 
-        ? `Adicione mais R$ ${faltaParaFrete.toFixed(2).replace('.', ',')} para ganhar Frete Gratis com Feira Livre+` 
-        : "Economize no frete assinando o Feira Livre+ por R$ 9,90/mes"
+      mensagem: isAssinante
+        ? `Adicione mais R$ ${faltaParaFrete.toFixed(2).replace(".", ",")} para ganhar Frete Gratis com Feira Livre+`
+        : "Economize no frete assinando o Feira Livre+ por R$ 9,90/mes",
     };
   }
 
@@ -148,18 +151,21 @@ window.FeiraMaisModule = (function () {
    * Validação de cupom exclusivo para assinantes
    */
   function validarCupomExclusivo(codigo) {
-    const cod = String(codigo || "").trim().toUpperCase();
+    const cod = String(codigo || "")
+      .trim()
+      .toUpperCase();
     if (cod === CONFIG.cupomExclusivo) {
       if (!isClienteAssinante()) {
         return {
           valido: false,
-          mensagem: "O cupom FEIRAMAIS10 e exclusivo para assinantes Feira Livre+. Assine por R$ 9,90/mes para liberar este desconto!"
+          mensagem:
+            "O cupom FEIRAMAIS10 e exclusivo para assinantes Feira Livre+. Assine por R$ 9,90/mes para liberar este desconto!",
         };
       }
       return {
         valido: true,
         percentual: CONFIG.descontoCupomPercentual,
-        mensagem: "Cupom Feira Livre+ de 10% OFF aplicado com sucesso!"
+        mensagem: "Cupom Feira Livre+ de 10% OFF aplicado com sucesso!",
       };
     }
     return null; // Não é cupom exclusivo do clube
@@ -185,11 +191,20 @@ window.FeiraMaisModule = (function () {
     const btnReativar = document.getElementById("btn-cli-reativar-sub");
     const btnCtaHero = document.getElementById("btn-cta-feiramais");
 
-    if (elTitle) elTitle.textContent = isAssinante ? "Minha Assinatura Feira Livre+" : "Minha Assinatura (Cliente)";
-    if (elPlanoNome) elPlanoNome.textContent = isAssinante ? "Feira Livre+" : "Plano Gratuito";
-    if (elValor) elValor.textContent = isAssinante ? `${CONFIG.precoFormatado} /mes` : "R$ 0,00 /mes";
-    if (elProx) elProx.textContent = clienteAssinatura.dataProximaCobranca || "-";
-    if (elInicio) elInicio.textContent = formatarDataBR(clienteAssinatura.dataInicio);
+    if (elTitle)
+      elTitle.textContent = isAssinante
+        ? "Minha Assinatura Feira Livre+"
+        : "Minha Assinatura (Cliente)";
+    if (elPlanoNome)
+      elPlanoNome.textContent = isAssinante ? "Feira Livre+" : "Plano Gratuito";
+    if (elValor)
+      elValor.textContent = isAssinante
+        ? `${CONFIG.precoFormatado} /mes`
+        : "R$ 0,00 /mes";
+    if (elProx)
+      elProx.textContent = clienteAssinatura.dataProximaCobranca || "-";
+    if (elInicio)
+      elInicio.textContent = formatarDataBR(clienteAssinatura.dataInicio);
 
     if (elBadge) {
       elBadge.className = `sub-badge ${st}`;
@@ -198,7 +213,7 @@ window.FeiraMaisModule = (function () {
         gratuita: "Gratuita",
         cancelada: "Cancelada",
         suspensa: "Suspensa",
-        vencida: "Vencida"
+        vencida: "Vencida",
       };
       elBadge.textContent = rotulos[st] || st.toUpperCase();
     }
@@ -217,20 +232,25 @@ window.FeiraMaisModule = (function () {
       btnAssinar.textContent = "Assinar Feira Livre+";
     }
     if (btnCancelar) {
-      btnCancelar.style.display = (st === "ativa") ? "inline-block" : "none";
+      btnCancelar.style.display = st === "ativa" ? "inline-block" : "none";
     }
     if (btnReativar) {
-      btnReativar.style.display = (st === "cancelada" || st === "suspensa") ? "inline-block" : "none";
+      btnReativar.style.display =
+        st === "cancelada" || st === "suspensa" ? "inline-block" : "none";
     }
     if (btnCtaHero) {
-      btnCtaHero.textContent = isAssinante ? "Assinatura Ja Ativa" : "Assinar Feira Livre+";
+      btnCtaHero.textContent = isAssinante
+        ? "Assinatura Ja Ativa"
+        : "Assinar Feira Livre+";
       btnCtaHero.disabled = isAssinante;
       btnCtaHero.style.opacity = isAssinante ? "0.75" : "1";
     }
 
     const tagGratuito = document.getElementById("tag-plano-gratuito-ativo");
     if (tagGratuito) {
-      tagGratuito.textContent = isAssinante ? "Plano Basico" : "Seu Plano Atual";
+      tagGratuito.textContent = isAssinante
+        ? "Plano Basico"
+        : "Seu Plano Atual";
     }
   }
 
@@ -243,12 +263,19 @@ window.FeiraMaisModule = (function () {
     const ecoCusto = document.getElementById("eco-custo-val");
     const ecoLiq = document.getElementById("eco-liquida-val");
 
-    if (ecoMes) ecoMes.textContent = `R$ ${economiaRegistro.descontoFreteTotal.toFixed(2).replace('.', ',')}`;
-    if (ecoTotal) ecoTotal.textContent = `R$ ${economiaRegistro.economiaTotal.toFixed(2).replace('.', ',')}`;
-    if (ecoCusto) ecoCusto.textContent = `R$ ${CONFIG.precoMensal.toFixed(2).replace('.', ',')}`;
-    
-    const liquido = Math.max(0, economiaRegistro.economiaTotal - CONFIG.precoMensal);
-    if (ecoLiq) ecoLiq.textContent = `R$ ${liquido.toFixed(2).replace('.', ',')}`;
+    if (ecoMes)
+      ecoMes.textContent = `R$ ${economiaRegistro.descontoFreteTotal.toFixed(2).replace(".", ",")}`;
+    if (ecoTotal)
+      ecoTotal.textContent = `R$ ${economiaRegistro.economiaTotal.toFixed(2).replace(".", ",")}`;
+    if (ecoCusto)
+      ecoCusto.textContent = `R$ ${CONFIG.precoMensal.toFixed(2).replace(".", ",")}`;
+
+    const liquido = Math.max(
+      0,
+      economiaRegistro.economiaTotal - CONFIG.precoMensal,
+    );
+    if (ecoLiq)
+      ecoLiq.textContent = `R$ ${liquido.toFixed(2).replace(".", ",")}`;
   }
 
   /**
@@ -269,15 +296,19 @@ window.FeiraMaisModule = (function () {
       return;
     }
 
-    tbody.innerHTML = historicoPagamentos.map(p => `
+    tbody.innerHTML = historicoPagamentos
+      .map(
+        (p) => `
       <tr>
         <td style="font-family:monospace; font-weight:600;">${p.idPagamento}</td>
         <td>${formatarDataBR(p.data)}</td>
-        <td style="font-weight:700; color:var(--primary);">R$ ${parseFloat(p.valor).toFixed(2).replace('.', ',')}</td>
+        <td style="font-weight:700; color:var(--primary);">R$ ${parseFloat(p.valor).toFixed(2).replace(".", ",")}</td>
         <td>${p.metodo}</td>
         <td><span class="sub-badge ativa">Pago</span></td>
       </tr>
-    `).join('');
+    `,
+      )
+      .join("");
   }
 
   /**
@@ -305,7 +336,8 @@ window.FeiraMaisModule = (function () {
 
     const elData = document.getElementById("chk-cli-proxima-data");
     const prox = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    if (elData) elData.textContent = formatarDataBR(prox.toISOString().split('T')[0]);
+    if (elData)
+      elData.textContent = formatarDataBR(prox.toISOString().split("T")[0]);
 
     modal.style.display = "flex";
   }
@@ -336,20 +368,27 @@ window.FeiraMaisModule = (function () {
       plano: "feiramais",
       valor: CONFIG.precoMensal,
       status: "ativa",
-      dataInicio: now.toISOString().split('T')[0],
-      dataProximaCobranca: proxima.toISOString().split('T')[0],
+      dataInicio: now.toISOString().split("T")[0],
+      dataProximaCobranca: proxima.toISOString().split("T")[0],
       dataCancelamento: "",
       gateway: "simulado_modo_demo",
       gatewaySubscriptionId: "gw_sub_" + Date.now(),
-      metodo: metodo
+      metodo: metodo,
     };
 
     // Chamada à API se houver backend configurado
-    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+    if (
+      typeof apiCall === "function" &&
+      typeof API_URL !== "undefined" &&
+      API_URL &&
+      API_URL.trim() !== ""
+    ) {
       try {
         await apiCall("criarAssinaturaCliente", "POST", novaAssinatura);
-      } catch(e) {
-        console.warn("Assinatura cliente: backend offline, ativado no modo demonstracao local.");
+      } catch (e) {
+        console.warn(
+          "Assinatura cliente: backend offline, ativado no modo demonstracao local.",
+        );
       }
     }
 
@@ -362,9 +401,9 @@ window.FeiraMaisModule = (function () {
       idAssinatura: novaAssinatura.idAssinatura,
       clienteId: 1,
       valor: CONFIG.precoMensal,
-      data: now.toISOString().split('T')[0],
+      data: now.toISOString().split("T")[0],
       status: "aprovado",
-      metodo: metodo
+      metodo: metodo,
     });
 
     fecharCheckout();
@@ -395,7 +434,8 @@ window.FeiraMaisModule = (function () {
     const modal = document.getElementById("modal-cancelar-feiramais");
     const elPeriodo = document.getElementById("cancel-cli-periodo");
     if (elPeriodo) {
-      elPeriodo.textContent = clienteAssinatura.dataProximaCobranca || "fim do periodo pago";
+      elPeriodo.textContent =
+        clienteAssinatura.dataProximaCobranca || "fim do periodo pago";
     }
     if (modal) modal.style.display = "flex";
   }
@@ -407,13 +447,21 @@ window.FeiraMaisModule = (function () {
 
   async function confirmarCancelamento() {
     clienteAssinatura.status = "cancelada";
-    clienteAssinatura.dataCancelamento = new Date().toISOString().split('T')[0];
+    clienteAssinatura.dataCancelamento = new Date().toISOString().split("T")[0];
     salvarAssinaturaLocal(clienteAssinatura);
 
-    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+    if (
+      typeof apiCall === "function" &&
+      typeof API_URL !== "undefined" &&
+      API_URL &&
+      API_URL.trim() !== ""
+    ) {
       try {
-        await apiCall("cancelarAssinaturaCliente", "POST", { idAssinatura: clienteAssinatura.idAssinatura, clienteId: 1 });
-      } catch(e) {}
+        await apiCall("cancelarAssinaturaCliente", "POST", {
+          idAssinatura: clienteAssinatura.idAssinatura,
+          clienteId: 1,
+        });
+      } catch (e) {}
     }
 
     fecharCancelar();
@@ -421,7 +469,9 @@ window.FeiraMaisModule = (function () {
     atualizarBotaoHeaderStatus();
 
     if (typeof showToast === "function") {
-      showToast("Sua assinatura foi cancelada. Os beneficios continuam ativos ate o final do periodo ja pago.");
+      showToast(
+        "Sua assinatura foi cancelada. Os beneficios continuam ativos ate o final do periodo ja pago.",
+      );
     }
   }
 
@@ -432,13 +482,21 @@ window.FeiraMaisModule = (function () {
     clienteAssinatura.status = "ativa";
     clienteAssinatura.dataCancelamento = "";
     const proxima = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    clienteAssinatura.dataProximaCobranca = proxima.toISOString().split('T')[0];
+    clienteAssinatura.dataProximaCobranca = proxima.toISOString().split("T")[0];
     salvarAssinaturaLocal(clienteAssinatura);
 
-    if (typeof apiCall === "function" && typeof API_URL !== "undefined" && API_URL && API_URL.trim() !== "") {
+    if (
+      typeof apiCall === "function" &&
+      typeof API_URL !== "undefined" &&
+      API_URL &&
+      API_URL.trim() !== ""
+    ) {
       try {
-        await apiCall("reativarAssinaturaCliente", "POST", { idAssinatura: clienteAssinatura.idAssinatura, clienteId: 1 });
-      } catch(e) {}
+        await apiCall("reativarAssinaturaCliente", "POST", {
+          idAssinatura: clienteAssinatura.idAssinatura,
+          clienteId: 1,
+        });
+      } catch (e) {}
     }
 
     renderizarPainelCliente();
@@ -467,7 +525,7 @@ window.FeiraMaisModule = (function () {
 
   function formatarDataBR(dataStr) {
     if (!dataStr || dataStr === "-") return "-";
-    const p = String(dataStr).split('-');
+    const p = String(dataStr).split("-");
     if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
     return dataStr;
   }
@@ -487,19 +545,19 @@ window.FeiraMaisModule = (function () {
     confirmarCancelamento,
     reativarAssinatura,
     registrarEconomiaPedido,
-    getConfig: () => CONFIG
+    getConfig: () => CONFIG,
   };
-
 })();
 
-window.verificarAssinaturaCliente = function() {
-  if (window.FeiraMaisModule && typeof window.FeiraMaisModule.verificarAssinaturaCliente === 'function') {
+window.verificarAssinaturaCliente = function () {
+  if (
+    window.FeiraMaisModule &&
+    typeof window.FeiraMaisModule.verificarAssinaturaCliente === "function"
+  ) {
     return window.FeiraMaisModule.verificarAssinaturaCliente();
   }
-  return { isAssinante: false, status: 'gratuita' };
+  return { isAssinante: false, status: "gratuita" };
 };
-
-
 
 function renderMeusProdutosCadastrados() {
   const tbody = document.getElementById("producer-products-tbody");
@@ -508,7 +566,9 @@ function renderMeusProdutosCadastrados() {
   const sel = document.getElementById("sel-active-producer");
   const pid = sel ? parseInt(sel.value, 10) : 1;
 
-  const prods = (typeof produtos !== "undefined" ? produtos : []).filter(p => p.produtor_id === pid);
+  const prods = (typeof produtos !== "undefined" ? produtos : []).filter(
+    (p) => p.produtor_id === pid,
+  );
 
   if (prods.length === 0) {
     tbody.innerHTML = `
@@ -521,18 +581,32 @@ function renderMeusProdutosCadastrados() {
     return;
   }
 
-  const catMap = { 1: "Vegetais", 2: "Frutas", 3: "Raizes", 4: "Folhas", 5: "Graos", 6: "Laticinios", 7: "Ovos", 8: "Mel", 9: "Artesanais" };
+  const catMap = {
+    1: "Vegetais",
+    2: "Frutas",
+    3: "Raizes",
+    4: "Folhas",
+    5: "Graos",
+    6: "Laticinios",
+    7: "Ovos",
+    8: "Mel",
+    9: "Artesanais",
+  };
 
-  tbody.innerHTML = prods.map(p => `
+  tbody.innerHTML = prods
+    .map(
+      (p) => `
     <tr>
       <td><strong>${p.nome}</strong></td>
-      <td>${catMap[p.categoria_id] || 'Geral'}</td>
-      <td>R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')} / ${p.unidade}</td>
+      <td>${catMap[p.categoria_id] || "Geral"}</td>
+      <td>R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")} / ${p.unidade}</td>
       <td>${p.estoque} un</td>
-      <td>${p.organico ? '<span style="color:#15803D; font-weight:600;">Organico</span>' : 'Convencional'}</td>
+      <td>${p.organico ? '<span style="color:#15803D; font-weight:600;">Organico</span>' : "Convencional"}</td>
       <td><span class="sub-badge ativa">Ativo</span></td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join("");
 }
 
 function selecionarProdutorPainel(id) {
@@ -542,9 +616,9 @@ function selecionarProdutorPainel(id) {
     2: "Atelie Fibra Criativa",
     3: "Apiario Doce Mel",
     4: "Sitio Verde Vivo",
-    5: "Sabores da Roca"
+    5: "Sabores da Roca",
   };
   if (typeof showToast === "function") {
-    showToast(`Painel do produtor: ${nomes[id] || 'Produtor ' + id}`);
+    showToast(`Painel do produtor: ${nomes[id] || "Produtor " + id}`);
   }
 }

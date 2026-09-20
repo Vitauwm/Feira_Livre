@@ -1,4 +1,3 @@
-
 /**
  * ============================================================================
  * FEIRA LIVRE — MÓDULO DE LOGÍSTICA & ROTEIRIZAÇÃO INTELIGENTE
@@ -13,7 +12,6 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCSQTc-GrgO28IWUVKuli-p8lsmuwEB7LE";
 
 // Objeto global do módulo de logística para garantir encapsulamento e manutenção
 window.LogisticaModule = (function () {
-  
   // 1. DADOS DE DEMONSTRAÇÃO — PEDIDOS EM ARACAJU E GRANDE ARACAJU (SERGIPE)
   const PEDIDOS_DEMO = [
     // --- ZONA SUL ---
@@ -24,17 +22,21 @@ window.LogisticaModule = (function () {
       endereco: "Av. Santos Dumont, 1420",
       bairro: "Atalaia",
       cidade: "Aracaju",
-      latitude: -10.9880,
-      longitude: -37.0490,
-      produtos: ["Banana da Prata (2kg)", "Alface Crespa (1 un)", "Tomate Cereja (1 band)"],
+      latitude: -10.988,
+      longitude: -37.049,
+      produtos: [
+        "Banana da Prata (2kg)",
+        "Alface Crespa (1 un)",
+        "Tomate Cereja (1 band)",
+      ],
       quantidade: 4,
       peso: 4.2,
-      valor: 48.90,
+      valor: 48.9,
       horarioInicio: "08:30",
       horarioFim: "10:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Sul"
+      regiao: "Zona Sul",
     },
     {
       id: "PED-102",
@@ -43,17 +45,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua Urbano Neto, 305",
       bairro: "Coroa do Meio",
       cidade: "Aracaju",
-      latitude: -10.9750,
-      longitude: -37.0450,
+      latitude: -10.975,
+      longitude: -37.045,
       produtos: ["Laranja Pêra (3kg)", "Mamão Formosa (1kg)"],
       quantidade: 4,
       peso: 4.0,
-      valor: 35.50,
+      valor: 35.5,
       horarioInicio: "09:00",
       horarioFim: "11:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Sul"
+      regiao: "Zona Sul",
     },
     {
       id: "PED-103",
@@ -62,17 +64,21 @@ window.LogisticaModule = (function () {
       endereco: "Rua Muribeca, 88",
       bairro: "Farolândia",
       cidade: "Aracaju",
-      latitude: -10.9660,
-      longitude: -37.0590,
-      produtos: ["Batata (2kg)", "Tomate Cereja (2 band)", "Mel Silvestre (1 frasco)"],
+      latitude: -10.966,
+      longitude: -37.059,
+      produtos: [
+        "Batata (2kg)",
+        "Tomate Cereja (2 band)",
+        "Mel Silvestre (1 frasco)",
+      ],
       quantidade: 5,
       peso: 5.8,
-      valor: 67.00,
+      valor: 67.0,
       horarioInicio: "09:30",
       horarioFim: "11:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Sul"
+      regiao: "Zona Sul",
     },
     {
       id: "PED-104",
@@ -81,17 +87,21 @@ window.LogisticaModule = (function () {
       endereco: "Rodovia José Sarney, Cond. Veraneio",
       bairro: "Aruana",
       cidade: "Aracaju",
-      latitude: -11.0250,
-      longitude: -37.0720,
-      produtos: ["Abacaxi Pérola (2 un)", "Manga Palmer (2kg)", "Limão Taiti (1kg)"],
+      latitude: -11.025,
+      longitude: -37.072,
+      produtos: [
+        "Abacaxi Pérola (2 un)",
+        "Manga Palmer (2kg)",
+        "Limão Taiti (1kg)",
+      ],
       quantidade: 5,
       peso: 6.4,
-      valor: 58.50,
+      valor: 58.5,
       horarioInicio: "10:00",
       horarioFim: "12:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Sul"
+      regiao: "Zona Sul",
     },
     {
       id: "PED-105",
@@ -100,17 +110,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua Dr. Celso Oliva, 210",
       bairro: "Região Central (Jardins)",
       cidade: "Aracaju",
-      latitude: -10.9490,
-      longitude: -37.0620,
+      latitude: -10.949,
+      longitude: -37.062,
       produtos: ["Morango (2 caixas)", "Maçã Gala (1kg)"],
       quantidade: 3,
       peso: 2.9,
-      valor: 42.50,
+      valor: 42.5,
       horarioInicio: "10:30",
       horarioFim: "12:30",
       status: "Pendente",
       produtorResponsavel: "Sítio Verde Vivo",
-      regiao: "Centro"
+      regiao: "Centro",
     },
     {
       id: "PED-106",
@@ -119,17 +129,21 @@ window.LogisticaModule = (function () {
       endereco: "Av. Min. Geraldo Barreto Sobral, 1100",
       bairro: "Garcia",
       cidade: "Aracaju",
-      latitude: -10.9430,
-      longitude: -37.0580,
-      produtos: ["Banana da Prata (1kg)", "Laranja Pêra (2kg)", "Alface Crespa (2 un)"],
+      latitude: -10.943,
+      longitude: -37.058,
+      produtos: [
+        "Banana da Prata (1kg)",
+        "Laranja Pêra (2kg)",
+        "Alface Crespa (2 un)",
+      ],
       quantidade: 5,
       peso: 4.0,
-      valor: 41.50,
+      valor: 41.5,
       horarioInicio: "11:00",
       horarioFim: "13:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Centro"
+      regiao: "Centro",
     },
 
     // --- CENTRO & LESTE ---
@@ -140,17 +154,21 @@ window.LogisticaModule = (function () {
       endereco: "Rua Laranjeiras, 450",
       bairro: "Centro",
       cidade: "Aracaju",
-      latitude: -10.9120,
-      longitude: -37.0510,
-      produtos: ["Batata (2kg)", "Alface Crespa (2 un)", "Banana da Prata (1kg)"],
+      latitude: -10.912,
+      longitude: -37.051,
+      produtos: [
+        "Batata (2kg)",
+        "Alface Crespa (2 un)",
+        "Banana da Prata (1kg)",
+      ],
       quantidade: 5,
       peso: 3.5,
-      valor: 38.00,
+      valor: 38.0,
       horarioInicio: "08:30",
       horarioFim: "10:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Centro"
+      regiao: "Centro",
     },
     {
       id: "PED-202",
@@ -159,17 +177,17 @@ window.LogisticaModule = (function () {
       endereco: "Av. Ivo do Prado, 612",
       bairro: "São José",
       cidade: "Aracaju",
-      latitude: -10.9250,
-      longitude: -37.0500,
+      latitude: -10.925,
+      longitude: -37.05,
       produtos: ["Mel Silvestre (2 frascos)", "Manga Palmer (2kg)"],
       quantidade: 4,
       peso: 5.0,
-      valor: 75.00,
+      valor: 75.0,
       horarioInicio: "09:00",
       horarioFim: "11:00",
       status: "Pendente",
       produtorResponsavel: "Apiário Doce Mel",
-      regiao: "Centro"
+      regiao: "Centro",
     },
     {
       id: "PED-203",
@@ -178,17 +196,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua Estância, 780",
       bairro: "Suíssa",
       cidade: "Aracaju",
-      latitude: -10.9280,
-      longitude: -37.0620,
+      latitude: -10.928,
+      longitude: -37.062,
       produtos: ["Tomate Cereja (1 band)", "Morango (1 caixa)"],
       quantidade: 2,
       peso: 2.2,
-      valor: 28.00,
+      valor: 28.0,
       horarioInicio: "09:30",
       horarioFim: "11:30",
       status: "Pendente",
       produtorResponsavel: "Sítio Verde Vivo",
-      regiao: "Centro"
+      regiao: "Centro",
     },
     {
       id: "PED-204",
@@ -197,17 +215,21 @@ window.LogisticaModule = (function () {
       endereco: "Av. Beira Mar, 1850",
       bairro: "13 de Julho",
       cidade: "Aracaju",
-      latitude: -10.9380,
-      longitude: -37.0520,
-      produtos: ["Laranja Pêra (3kg)", "Abacaxi Pérola (1 un)", "Maçã Gala (1kg)"],
+      latitude: -10.938,
+      longitude: -37.052,
+      produtos: [
+        "Laranja Pêra (3kg)",
+        "Abacaxi Pérola (1 un)",
+        "Maçã Gala (1kg)",
+      ],
       quantidade: 5,
       peso: 4.7,
-      valor: 43.50,
+      valor: 43.5,
       horarioInicio: "10:00",
       horarioFim: "12:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Centro"
+      regiao: "Centro",
     },
     {
       id: "PED-205",
@@ -216,17 +238,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua Cedro, 340",
       bairro: "Salgado Filho",
       cidade: "Aracaju",
-      latitude: -10.9330,
-      longitude: -37.0650,
+      latitude: -10.933,
+      longitude: -37.065,
       produtos: ["Batata (2kg)", "Banana da Prata (2kg)"],
       quantidade: 4,
       peso: 3.8,
-      valor: 34.00,
+      valor: 34.0,
       horarioInicio: "10:30",
       horarioFim: "12:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Centro"
+      regiao: "Centro",
     },
 
     // --- ZONA NORTE & OESTE ---
@@ -237,17 +259,21 @@ window.LogisticaModule = (function () {
       endereco: "Rua Sergipe, 1205",
       bairro: "Siqueira Campos",
       cidade: "Aracaju",
-      latitude: -10.9200,
-      longitude: -37.0780,
-      produtos: ["Mamão Formosa (2kg)", "Banana da Prata (2kg)", "Limão Taiti (1kg)"],
+      latitude: -10.92,
+      longitude: -37.078,
+      produtos: [
+        "Mamão Formosa (2kg)",
+        "Banana da Prata (2kg)",
+        "Limão Taiti (1kg)",
+      ],
       quantidade: 5,
       peso: 4.8,
-      valor: 42.00,
+      valor: 42.0,
       horarioInicio: "08:30",
       horarioFim: "10:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-302",
@@ -256,17 +282,17 @@ window.LogisticaModule = (function () {
       endereco: "Av. Maranhão, 890",
       bairro: "Santos Dumont",
       cidade: "Aracaju",
-      latitude: -10.8960,
-      longitude: -37.0700,
+      latitude: -10.896,
+      longitude: -37.07,
       produtos: ["Mel Silvestre (1 frasco)", "Tomate Cereja (1 band)"],
       quantidade: 2,
       peso: 3.6,
-      valor: 43.00,
+      valor: 43.0,
       horarioInicio: "09:00",
       horarioFim: "11:00",
       status: "Pendente",
       produtorResponsavel: "Apiário Doce Mel",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-303",
@@ -275,17 +301,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua São João, 412",
       bairro: "Bairro Industrial",
       cidade: "Aracaju",
-      latitude: -10.8990,
-      longitude: -37.0550,
+      latitude: -10.899,
+      longitude: -37.055,
       produtos: ["Morango (1 caixa)", "Laranja Pêra (2kg)"],
       quantidade: 3,
       peso: 2.7,
-      valor: 32.00,
+      valor: 32.0,
       horarioInicio: "09:30",
       horarioFim: "11:30",
       status: "Pendente",
       produtorResponsavel: "Sítio Verde Vivo",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-304",
@@ -294,17 +320,17 @@ window.LogisticaModule = (function () {
       endereco: "Av. Poço do Mero, 140",
       bairro: "Bugio",
       cidade: "Aracaju",
-      latitude: -10.9080,
-      longitude: -37.0920,
+      latitude: -10.908,
+      longitude: -37.092,
       produtos: ["Manga Palmer (3kg)", "Banana da Prata (2kg)"],
       quantidade: 5,
       peso: 5.3,
-      valor: 46.50,
+      valor: 46.5,
       horarioInicio: "10:00",
       horarioFim: "12:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-305",
@@ -313,17 +339,21 @@ window.LogisticaModule = (function () {
       endereco: "Rua das Camélias, 80",
       bairro: "Jabotiana",
       cidade: "Aracaju",
-      latitude: -10.9450,
-      longitude: -37.0980,
-      produtos: ["Batata (3kg)", "Abacaxi Pérola (2 un)", "Alface Crespa (2 un)"],
+      latitude: -10.945,
+      longitude: -37.098,
+      produtos: [
+        "Batata (3kg)",
+        "Abacaxi Pérola (2 un)",
+        "Alface Crespa (2 un)",
+      ],
       quantidade: 7,
       peso: 6.0,
-      valor: 54.00,
+      valor: 54.0,
       horarioInicio: "10:30",
       horarioFim: "12:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-306",
@@ -332,17 +362,17 @@ window.LogisticaModule = (function () {
       endereco: "Rua Santa Luzia, 410",
       bairro: "Ponto Novo",
       cidade: "Aracaju",
-      latitude: -10.9400,
-      longitude: -37.0750,
+      latitude: -10.94,
+      longitude: -37.075,
       produtos: ["Tomate Cereja (2 band)", "Maçã Gala (1kg)"],
       quantidade: 3,
       peso: 3.2,
-      valor: 34.50,
+      valor: 34.5,
       horarioInicio: "11:00",
       horarioFim: "13:00",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Norte"
+      regiao: "Zona Norte",
     },
     {
       id: "PED-307",
@@ -351,61 +381,80 @@ window.LogisticaModule = (function () {
       endereco: "Av. Pref. Marcelo Déda, 550",
       bairro: "Eduardo Gomes",
       cidade: "São Cristóvão",
-      latitude: -10.9650,
-      longitude: -37.1250,
-      produtos: ["Mel Silvestre (1 frasco)", "Banana da Prata (2kg)", "Laranja Pêra (2kg)"],
+      latitude: -10.965,
+      longitude: -37.125,
+      produtos: [
+        "Mel Silvestre (1 frasco)",
+        "Banana da Prata (2kg)",
+        "Laranja Pêra (2kg)",
+      ],
       quantidade: 5,
       peso: 4.5,
-      valor: 51.00,
+      valor: 51.0,
       horarioInicio: "11:30",
       horarioFim: "13:30",
       status: "Pendente",
       produtorResponsavel: "Fazenda Boa Vista",
-      regiao: "Zona Norte"
-    }
+      regiao: "Zona Norte",
+    },
   ];
 
   // 2. LOCAIS DE ORIGEM DOS PRODUTORES EM SERGIPE
   const ORIGENS_PRODUTORES = {
-    "1": {
+    1: {
       id: "1",
       nome: "Fazenda Boa Vista",
       local: "São Cristóvão - SE",
       endereco: "Rodovia João Bebe Água, Km 4",
-      latitude: -10.9850,
-      longitude: -37.1700
+      latitude: -10.985,
+      longitude: -37.17,
     },
-    "4": {
+    4: {
       id: "4",
       nome: "Sítio Verde Vivo",
       local: "Itaporanga d'Ajuda - SE",
       endereco: "Povoado Sapé, Estrada Rural",
-      latitude: -11.0050,
-      longitude: -37.2800
+      latitude: -11.005,
+      longitude: -37.28,
     },
-    "5": {
+    5: {
       id: "5",
       nome: "Sabores da Roça",
       local: "São Cristóvão - SE",
       endereco: "Centro Histórico",
-      latitude: -11.0120,
-      longitude: -37.2050
+      latitude: -11.012,
+      longitude: -37.205,
     },
-    "ceasa": {
+    ceasa: {
       id: "ceasa",
       nome: "Ponto de Coleta Central (Ceasa)",
       local: "Aracaju - SE",
       endereco: "Av. Tancredo Neves",
-      latitude: -10.9320,
-      longitude: -37.0750
-    }
+      latitude: -10.932,
+      longitude: -37.075,
+    },
   };
 
   // Cores institucionais sóbrias por rota
   const CORES_ROTAS = {
-    "Zona Sul": { cor: "#2563EB", bg: "#EFF6FF", border: "#93C5FD", label: "Rota 1 — Zona Sul" },
-    "Centro": { cor: "#16A34A", bg: "#F0FDF4", border: "#86EFAC", label: "Rota 2 — Centro & Leste" },
-    "Zona Norte": { cor: "#D97706", bg: "#FFFBEB", border: "#FCD34D", label: "Rota 3 — Zona Norte & Oeste" }
+    "Zona Sul": {
+      cor: "#2563EB",
+      bg: "#EFF6FF",
+      border: "#93C5FD",
+      label: "Rota 1 — Zona Sul",
+    },
+    Centro: {
+      cor: "#16A34A",
+      bg: "#F0FDF4",
+      border: "#86EFAC",
+      label: "Rota 2 — Centro & Leste",
+    },
+    "Zona Norte": {
+      cor: "#D97706",
+      bg: "#FFFBEB",
+      border: "#FCD34D",
+      label: "Rota 3 — Zona Norte & Oeste",
+    },
   };
 
   // 3. ESTADO INTERNO DO MÓDULO
@@ -437,12 +486,14 @@ window.LogisticaModule = (function () {
   function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
     if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
     const R = 6371.0; // Raio médio da Terra em km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -458,7 +509,10 @@ window.LogisticaModule = (function () {
 
     const horas = Math.floor(totalMinutos / 60);
     const mins = totalMinutos % 60;
-    const formatado = horas > 0 ? `${horas}h ${mins.toString().padStart(2, '0')}min` : `${mins} min`;
+    const formatado =
+      horas > 0
+        ? `${horas}h ${mins.toString().padStart(2, "0")}min`
+        : `${mins} min`;
 
     return { totalMinutos, formatado };
   }
@@ -474,14 +528,14 @@ window.LogisticaModule = (function () {
     const grupos = {};
 
     // 1. Agrupamento inicial por bacia geográfica / região de Sergipe
-    pedidos.forEach(p => {
+    pedidos.forEach((p) => {
       let reg = p.regiao || "Zona Sul";
       if (!grupos[reg]) {
         grupos[reg] = {
           regiao: reg,
           pedidos: [],
           pesoTotal: 0,
-          valorTotal: 0
+          valorTotal: 0,
         };
       }
       grupos[reg].pedidos.push(p);
@@ -493,9 +547,9 @@ window.LogisticaModule = (function () {
     let contadorRota = 1;
 
     // 2. Validação de capacidade do veículo (divide rotas caso excedam a carga máxima)
-    Object.keys(grupos).forEach(reg => {
+    Object.keys(grupos).forEach((reg) => {
       const g = grupos[reg];
-      
+
       if (g.pesoTotal <= capacidadeMaximaKg) {
         rotasFinais.push({
           id: `ROTA-${contadorRota}`,
@@ -508,10 +562,16 @@ window.LogisticaModule = (function () {
           pedidos: g.pedidos,
           pesoTotal: Number(g.pesoTotal.toFixed(1)),
           valorTotal: Number(g.valorTotal.toFixed(2)),
-          status: g.pedidos.every(p => p.status === "Entregue") ? "Concluída" : 
-                  g.pedidos.some(p => p.status === "Em rota") ? "Em rota" : "Pendente",
+          status: g.pedidos.every((p) => p.status === "Entregue")
+            ? "Concluída"
+            : g.pedidos.some((p) => p.status === "Em rota")
+              ? "Em rota"
+              : "Pendente",
           capacidadeMaxima: capacidadeMaximaKg,
-          ocupacaoVeiculo: Math.min(100, Math.round((g.pesoTotal / capacidadeMaximaKg) * 100))
+          ocupacaoVeiculo: Math.min(
+            100,
+            Math.round((g.pesoTotal / capacidadeMaximaKg) * 100),
+          ),
         });
       } else {
         // Divide o grupo em sub-rotas para não sobrecarregar o pequeno produtor
@@ -520,8 +580,11 @@ window.LogisticaModule = (function () {
         let pesoA = 0;
         let pesoB = 0;
 
-        g.pedidos.forEach(p => {
-          if (pesoA + p.peso <= capacidadeMaximaKg && subA.length <= g.pedidos.length / 2) {
+        g.pedidos.forEach((p) => {
+          if (
+            pesoA + p.peso <= capacidadeMaximaKg &&
+            subA.length <= g.pedidos.length / 2
+          ) {
             subA.push(p);
             pesoA += p.peso;
           } else {
@@ -547,10 +610,16 @@ window.LogisticaModule = (function () {
               pedidos: subList,
               pesoTotal: Number(pesoSub.toFixed(1)),
               valorTotal: Number(valSub.toFixed(2)),
-              status: subList.every(p => p.status === "Entregue") ? "Concluída" : 
-                      subList.some(p => p.status === "Em rota") ? "Em rota" : "Pendente",
+              status: subList.every((p) => p.status === "Entregue")
+                ? "Concluída"
+                : subList.some((p) => p.status === "Em rota")
+                  ? "Em rota"
+                  : "Pendente",
               capacidadeMaxima: capacidadeMaximaKg,
-              ocupacaoVeiculo: Math.min(100, Math.round((pesoSub / capacidadeMaximaKg) * 100))
+              ocupacaoVeiculo: Math.min(
+                100,
+                Math.round((pesoSub / capacidadeMaximaKg) * 100),
+              ),
             });
           }
         });
@@ -581,8 +650,10 @@ window.LogisticaModule = (function () {
 
       for (let i = 0; i < naoVisitados.length; i++) {
         const d = calcularDistanciaHaversine(
-          pontoAtual.latitude, pontoAtual.longitude,
-          naoVisitados[i].latitude, naoVisitados[i].longitude
+          pontoAtual.latitude,
+          pontoAtual.longitude,
+          naoVisitados[i].latitude,
+          naoVisitados[i].longitude,
         );
         if (d < menorDistancia) {
           menorDistancia = d;
@@ -600,18 +671,22 @@ window.LogisticaModule = (function () {
 
     // Passo 3: Cálculo cumulativo de quilometragem e previsão de horário
     let distAcumulada = calcularDistanciaHaversine(
-      origem.latitude, origem.longitude,
-      rotaOrdenada[0].latitude, rotaOrdenada[0].longitude
+      origem.latitude,
+      origem.longitude,
+      rotaOrdenada[0].latitude,
+      rotaOrdenada[0].longitude,
     );
     let horaMinutos = 8 * 60; // Saída da roça às 08:00
 
     rotaOrdenada.forEach((p, idx) => {
       p.sequencia = idx + 1;
-      
+
       if (idx > 0) {
         const trecho = calcularDistanciaHaversine(
-          rotaOrdenada[idx - 1].latitude, rotaOrdenada[idx - 1].longitude,
-          p.latitude, p.longitude
+          rotaOrdenada[idx - 1].latitude,
+          rotaOrdenada[idx - 1].longitude,
+          p.latitude,
+          p.longitude,
         );
         distAcumulada += trecho;
         horaMinutos += Math.round((trecho / 28.0) * 60) + 7; // trânsito + entrega
@@ -621,7 +696,7 @@ window.LogisticaModule = (function () {
 
       const hH = Math.floor(horaMinutos / 60);
       const mM = horaMinutos % 60;
-      p.horarioPrevisto = `${hH.toString().padStart(2, '0')}:${mM.toString().padStart(2, '0')}`;
+      p.horarioPrevisto = `${hH.toString().padStart(2, "0")}:${mM.toString().padStart(2, "0")}`;
       p.distanciaDesdeOrigemKm = Number(distAcumulada.toFixed(1));
     });
 
@@ -634,9 +709,19 @@ window.LogisticaModule = (function () {
     let iteracoes = 0;
 
     function calcularCustoTotal(r) {
-      let d = calcularDistanciaHaversine(origem.latitude, origem.longitude, r[0].latitude, r[0].longitude);
+      let d = calcularDistanciaHaversine(
+        origem.latitude,
+        origem.longitude,
+        r[0].latitude,
+        r[0].longitude,
+      );
       for (let i = 0; i < r.length - 1; i++) {
-        d += calcularDistanciaHaversine(r[i].latitude, r[i].longitude, r[i+1].latitude, r[i+1].longitude);
+        d += calcularDistanciaHaversine(
+          r[i].latitude,
+          r[i].longitude,
+          r[i + 1].latitude,
+          r[i + 1].longitude,
+        );
       }
       return d;
     }
@@ -684,8 +769,10 @@ window.LogisticaModule = (function () {
 
     let waypointsStr = "";
     if (paradas.length > 1) {
-      const intermediarias = paradas.slice(0, paradas.length - 1).map(p => `${p.latitude},${p.longitude}`);
-      waypointsStr = `&waypoints=${encodeURIComponent(intermediarias.join('|'))}`;
+      const intermediarias = paradas
+        .slice(0, paradas.length - 1)
+        .map((p) => `${p.latitude},${p.longitude}`);
+      waypointsStr = `&waypoints=${encodeURIComponent(intermediarias.join("|"))}`;
     }
 
     return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origemStr)}&destination=${encodeURIComponent(destinoStr)}${waypointsStr}&travelmode=driving`;
@@ -752,8 +839,12 @@ window.LogisticaModule = (function () {
           streetViewControl: false,
           fullscreenControl: true,
           styles: [
-            { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }
-          ]
+            {
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }],
+            },
+          ],
         });
         gInfoWindow = new google.maps.InfoWindow();
       }
@@ -762,7 +853,8 @@ window.LogisticaModule = (function () {
       renderizarRotaNoGoogleMaps();
     } else {
       if (indDot) indDot.className = "engine-dot demo";
-      if (indText) indText.textContent = "Mapa Interativo de Demonstração (Sergipe)";
+      if (indText)
+        indText.textContent = "Mapa Interativo de Demonstração (Sergipe)";
       renderizarMapaFallbackSVG();
     }
   }
@@ -783,11 +875,11 @@ window.LogisticaModule = (function () {
     google.maps.event.trigger(gMapInstance, "resize");
 
     // 1. Limpa marcadores anteriores
-    gMarkers.forEach(m => m.setMap(null));
+    gMarkers.forEach((m) => m.setMap(null));
     gMarkers = [];
 
     // 2. Limpa polylines e direcoes anteriores
-    gPolylines.forEach(p => p.setMap(null));
+    gPolylines.forEach((p) => p.setMap(null));
     gPolylines = [];
     if (gDirectionsRenderer) {
       gDirectionsRenderer.setDirections({ routes: [] });
@@ -800,7 +892,10 @@ window.LogisticaModule = (function () {
     const bounds = new google.maps.LatLngBounds();
 
     // 1. Ponto de Partida / Produtor (Origem)
-    const origemPos = new google.maps.LatLng(Number(origem.latitude), Number(origem.longitude));
+    const origemPos = new google.maps.LatLng(
+      Number(origem.latitude),
+      Number(origem.longitude),
+    );
     bounds.extend(origemPos);
 
     const farmMarker = new google.maps.Marker({
@@ -814,8 +909,8 @@ window.LogisticaModule = (function () {
         fillColor: "#1E4D2B",
         fillOpacity: 1,
         strokeColor: "#FFFFFF",
-        strokeWeight: 2.5
-      }
+        strokeWeight: 2.5,
+      },
     });
     gMarkers.push(farmMarker);
 
@@ -831,12 +926,19 @@ window.LogisticaModule = (function () {
     });
 
     // 2. Marcadores das Paradas Sequenciais (1 a N)
-    rotaAtual.pedidos.forEach(p => {
-      const pos = new google.maps.LatLng(Number(p.latitude), Number(p.longitude));
+    rotaAtual.pedidos.forEach((p) => {
+      const pos = new google.maps.LatLng(
+        Number(p.latitude),
+        Number(p.longitude),
+      );
       bounds.extend(pos);
 
-      const corPin = p.status === "Entregue" ? "#15803D" : 
-                     p.status === "Em rota" ? "#2563EB" : "#1A73E8";
+      const corPin =
+        p.status === "Entregue"
+          ? "#15803D"
+          : p.status === "Em rota"
+            ? "#2563EB"
+            : "#1A73E8";
 
       const marker = new google.maps.Marker({
         position: pos,
@@ -847,7 +949,7 @@ window.LogisticaModule = (function () {
           text: String(p.sequencia),
           color: "#FFFFFF",
           fontSize: "11px",
-          fontWeight: "bold"
+          fontWeight: "bold",
         },
         icon: {
           path: "M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 Z",
@@ -856,8 +958,8 @@ window.LogisticaModule = (function () {
           strokeColor: "#FFFFFF",
           strokeWeight: 1.5,
           scale: 1.15,
-          labelOrigin: new google.maps.Point(0, -29)
-        }
+          labelOrigin: new google.maps.Point(0, -29),
+        },
       });
 
       marker.addListener("click", () => {
@@ -888,14 +990,18 @@ window.LogisticaModule = (function () {
    * 9. Exibir a distância real estimada da rota.
    * 10. Exibir o tempo estimado de deslocamento.
    */
-  async function calcularERenderizarRotaRealGoogle(origem, paradasOrdenadas, bounds) {
+  async function calcularERenderizarRotaRealGoogle(
+    origem,
+    paradasOrdenadas,
+    bounds,
+  ) {
     if (!window.google || !window.google.maps) {
       console.warn("Google Maps API nao disponivel no momento.");
       return;
     }
 
     // Limpa polylines anteriores
-    gPolylines.forEach(p => p.setMap(null));
+    gPolylines.forEach((p) => p.setMap(null));
     gPolylines = [];
 
     // Oculta banner de erro previo
@@ -924,9 +1030,10 @@ window.LogisticaModule = (function () {
     const destLat = Number(destinoStop.latitude);
     const destLng = Number(destinoStop.longitude);
 
-    const waypointsIntermediarios = paradasOrdenadas.length > 1 
-      ? paradasOrdenadas.slice(0, paradasOrdenadas.length - 1) 
-      : [];
+    const waypointsIntermediarios =
+      paradasOrdenadas.length > 1
+        ? paradasOrdenadas.slice(0, paradasOrdenadas.length - 1)
+        : [];
 
     let rotaCalculadaComSucesso = false;
     let erroFinal = null;
@@ -940,22 +1047,29 @@ window.LogisticaModule = (function () {
         routesLib = await google.maps.importLibrary("routes");
       }
 
-      if (routesLib && routesLib.Route && typeof routesLib.Route.computeRoutes === "function") {
+      if (
+        routesLib &&
+        routesLib.Route &&
+        typeof routesLib.Route.computeRoutes === "function"
+      ) {
         const routesRequest = {
           origin: {
             location: {
-              latLng: { latitude: origLat, longitude: origLng }
-            }
+              latLng: { latitude: origLat, longitude: origLng },
+            },
           },
           destination: {
             location: {
-              latLng: { latitude: destLat, longitude: destLng }
-            }
+              latLng: { latitude: destLat, longitude: destLng },
+            },
           },
-          intermediates: waypointsIntermediarios.map(p => ({
+          intermediates: waypointsIntermediarios.map((p) => ({
             location: {
-              latLng: { latitude: Number(p.latitude), longitude: Number(p.longitude) }
-            }
+              latLng: {
+                latitude: Number(p.latitude),
+                longitude: Number(p.longitude),
+              },
+            },
           })),
           travelMode: "DRIVE",
           routingPreference: "TRAFFIC_AWARE",
@@ -963,23 +1077,34 @@ window.LogisticaModule = (function () {
             "routes.polyline.encodedPolyline",
             "routes.distanceMeters",
             "routes.duration",
-            "routes.legs"
-          ]
+            "routes.legs",
+          ],
         };
 
         const res = await routesLib.Route.computeRoutes(routesRequest);
         if (res && res.routes && res.routes.length > 0) {
           const r = res.routes[0];
           let path = [];
-          if (r.polyline && r.polyline.encodedPolyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
-            path = google.maps.geometry.encoding.decodePath(r.polyline.encodedPolyline);
+          if (
+            r.polyline &&
+            r.polyline.encodedPolyline &&
+            window.google.maps.geometry &&
+            window.google.maps.geometry.encoding
+          ) {
+            path = google.maps.geometry.encoding.decodePath(
+              r.polyline.encodedPolyline,
+            );
           }
           if (path.length > 0) {
             desenharPolylineViasReais(path);
             const distKm = ((r.distanceMeters || 0) / 1000).toFixed(1);
             const segundos = parseInt(r.duration || "0", 10);
             const tempoFmt = formatarSegundos(segundos);
-            atualizarMetricasRotaPainel(distKm, tempoFmt, paradasOrdenadas.length);
+            atualizarMetricasRotaPainel(
+              distKm,
+              tempoFmt,
+              paradasOrdenadas.length,
+            );
             gMapInstance.fitBounds(bounds);
             rotaCalculadaComSucesso = true;
             return;
@@ -987,28 +1112,41 @@ window.LogisticaModule = (function () {
         }
       }
     } catch (errRoutesLib) {
-      console.warn("Routes Library (computeRoutes) falhou ou indisponivel:", errRoutesLib);
+      console.warn(
+        "Routes Library (computeRoutes) falhou ou indisponivel:",
+        errRoutesLib,
+      );
       erroFinal = errRoutesLib;
     }
 
     // ------------------------------------------------------------------------
     // METODO 2: Google Routes API v2 via REST / fetch (captura erro original de habilitacao/cota)
     // ------------------------------------------------------------------------
-    if (!rotaCalculadaComSucesso && GOOGLE_MAPS_API_KEY && GOOGLE_MAPS_API_KEY !== "SUA_CHAVE_AQUI") {
+    if (
+      !rotaCalculadaComSucesso &&
+      GOOGLE_MAPS_API_KEY &&
+      GOOGLE_MAPS_API_KEY !== "SUA_CHAVE_AQUI"
+    ) {
       try {
-        const restUrl = "https://routes.googleapis.com/directions/v2:computeRoutes";
+        const restUrl =
+          "https://routes.googleapis.com/directions/v2:computeRoutes";
         const restBody = {
           origin: {
-            location: { latLng: { latitude: origLat, longitude: origLng } }
+            location: { latLng: { latitude: origLat, longitude: origLng } },
           },
           destination: {
-            location: { latLng: { latitude: destLat, longitude: destLng } }
+            location: { latLng: { latitude: destLat, longitude: destLng } },
           },
-          intermediates: waypointsIntermediarios.map(p => ({
-            location: { latLng: { latitude: Number(p.latitude), longitude: Number(p.longitude) } }
+          intermediates: waypointsIntermediarios.map((p) => ({
+            location: {
+              latLng: {
+                latitude: Number(p.latitude),
+                longitude: Number(p.longitude),
+              },
+            },
           })),
           travelMode: "DRIVE",
-          routingPreference: "TRAFFIC_AWARE"
+          routingPreference: "TRAFFIC_AWARE",
         };
 
         const restRes = await fetch(restUrl, {
@@ -1016,9 +1154,10 @@ window.LogisticaModule = (function () {
           headers: {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs"
+            "X-Goog-FieldMask":
+              "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs",
           },
-          body: JSON.stringify(restBody)
+          body: JSON.stringify(restBody),
         });
 
         if (restRes.ok) {
@@ -1026,15 +1165,26 @@ window.LogisticaModule = (function () {
           if (data && data.routes && data.routes.length > 0) {
             const r = data.routes[0];
             let path = [];
-            if (r.polyline && r.polyline.encodedPolyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
-              path = google.maps.geometry.encoding.decodePath(r.polyline.encodedPolyline);
+            if (
+              r.polyline &&
+              r.polyline.encodedPolyline &&
+              window.google.maps.geometry &&
+              window.google.maps.geometry.encoding
+            ) {
+              path = google.maps.geometry.encoding.decodePath(
+                r.polyline.encodedPolyline,
+              );
             }
             if (path.length > 0) {
               desenharPolylineViasReais(path);
               const distKm = ((r.distanceMeters || 0) / 1000).toFixed(1);
               const segundos = parseInt(r.duration || "0", 10);
               const tempoFmt = formatarSegundos(segundos);
-              atualizarMetricasRotaPainel(distKm, tempoFmt, paradasOrdenadas.length);
+              atualizarMetricasRotaPainel(
+                distKm,
+                tempoFmt,
+                paradasOrdenadas.length,
+              );
               gMapInstance.fitBounds(bounds);
               rotaCalculadaComSucesso = true;
               return;
@@ -1042,9 +1192,10 @@ window.LogisticaModule = (function () {
           }
         } else {
           const errData = await restRes.json().catch(() => null);
-          const msg = (errData && errData.error && errData.error.message) 
-            ? `[HTTP ${restRes.status} ${errData.error.status || ''}] ${errData.error.message}`
-            : `HTTP ${restRes.status} ${restRes.statusText}`;
+          const msg =
+            errData && errData.error && errData.error.message
+              ? `[HTTP ${restRes.status} ${errData.error.status || ""}] ${errData.error.message}`
+              : `HTTP ${restRes.status} ${restRes.statusText}`;
           erroFinal = new Error(msg);
           console.warn("Routes API REST retornou erro:", msg, errData);
         }
@@ -1065,15 +1216,18 @@ window.LogisticaModule = (function () {
       const dsRequest = {
         origin: new google.maps.LatLng(origLat, origLng),
         destination: new google.maps.LatLng(destLat, destLng),
-        waypoints: waypointsIntermediarios.map(p => ({
-          location: new google.maps.LatLng(Number(p.latitude), Number(p.longitude)),
-          stopover: true
+        waypoints: waypointsIntermediarios.map((p) => ({
+          location: new google.maps.LatLng(
+            Number(p.latitude),
+            Number(p.longitude),
+          ),
+          stopover: true,
         })),
         optimizeWaypoints: false,
-        travelMode: google.maps.TravelMode.DRIVING
+        travelMode: google.maps.TravelMode.DRIVING,
       };
 
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         gDirectionsService.route(dsRequest, function (response, status) {
           if (status === google.maps.DirectionsStatus.OK || status === "OK") {
             let routePath = [];
@@ -1081,8 +1235,15 @@ window.LogisticaModule = (function () {
               const route = response.routes[0];
               if (route.overview_path && route.overview_path.length > 0) {
                 routePath = route.overview_path;
-              } else if (route.overview_polyline && window.google.maps.geometry && window.google.maps.geometry.encoding) {
-                const enc = typeof route.overview_polyline === 'string' ? route.overview_polyline : route.overview_polyline.points;
+              } else if (
+                route.overview_polyline &&
+                window.google.maps.geometry &&
+                window.google.maps.geometry.encoding
+              ) {
+                const enc =
+                  typeof route.overview_polyline === "string"
+                    ? route.overview_polyline
+                    : route.overview_polyline.points;
                 routePath = google.maps.geometry.encoding.decodePath(enc);
               }
             }
@@ -1095,22 +1256,33 @@ window.LogisticaModule = (function () {
             let totalSegundos = 0;
             const route = response.routes[0];
             if (route && route.legs) {
-              route.legs.forEach(leg => {
-                totalMetros += (leg.distance && leg.distance.value) ? leg.distance.value : 0;
-                totalSegundos += (leg.duration && leg.duration.value) ? leg.duration.value : 0;
+              route.legs.forEach((leg) => {
+                totalMetros +=
+                  leg.distance && leg.distance.value ? leg.distance.value : 0;
+                totalSegundos +=
+                  leg.duration && leg.duration.value ? leg.duration.value : 0;
               });
             }
 
             const distRealKm = (totalMetros / 1000).toFixed(1);
             const tempoDeslocamentoFormatado = formatarSegundos(totalSegundos);
 
-            atualizarMetricasRotaPainel(distRealKm, tempoDeslocamentoFormatado, paradasOrdenadas.length);
+            atualizarMetricasRotaPainel(
+              distRealKm,
+              tempoDeslocamentoFormatado,
+              paradasOrdenadas.length,
+            );
             gMapInstance.fitBounds(bounds);
             rotaCalculadaComSucesso = true;
           } else {
             // Se falhou em todas as tentativas, registra erro original completo
-            const erroMsg = erroFinal ? erroFinal.message : `DirectionsStatus: ${status}`;
-            console.error("Erro completo ao calcular rota:", erroMsg, { status, erroFinal });
+            const erroMsg = erroFinal
+              ? erroFinal.message
+              : `DirectionsStatus: ${status}`;
+            console.error("Erro completo ao calcular rota:", erroMsg, {
+              status,
+              erroFinal,
+            });
             exibirErroOriginalAPI(erroMsg, paradasOrdenadas.length);
             gMapInstance.fitBounds(bounds);
           }
@@ -1121,7 +1293,7 @@ window.LogisticaModule = (function () {
   }
 
   function desenharPolylineViasReais(path) {
-    gPolylines.forEach(p => p.setMap(null));
+    gPolylines.forEach((p) => p.setMap(null));
     gPolylines = [];
 
     const navPolyline = new google.maps.Polyline({
@@ -1131,7 +1303,7 @@ window.LogisticaModule = (function () {
       strokeOpacity: 0.85,
       strokeWeight: 5,
       map: gMapInstance,
-      zIndex: 50
+      zIndex: 50,
     });
     gPolylines.push(navPolyline);
   }
@@ -1140,7 +1312,9 @@ window.LogisticaModule = (function () {
     const totalMin = Math.round(totalSegundos / 60);
     const horas = Math.floor(totalMin / 60);
     const mins = totalMin % 60;
-    return horas > 0 ? `${horas}h ${mins.toString().padStart(2, '0')}min` : `${mins} min`;
+    return horas > 0
+      ? `${horas}h ${mins.toString().padStart(2, "0")}min`
+      : `${mins} min`;
   }
 
   function exibirErroOriginalAPI(erroOriginal, qtdParadas) {
@@ -1181,17 +1355,17 @@ window.LogisticaModule = (function () {
     const errBanner = document.getElementById("sel-route-error-banner");
 
     if (errBanner) errBanner.style.display = "none";
-    if (distEl) distEl.textContent = `${distKm.replace('.', ',')} km`;
+    if (distEl) distEl.textContent = `${distKm.replace(".", ",")} km`;
     if (timeEl) timeEl.textContent = tempoFormatado;
     if (stopsEl) stopsEl.textContent = `${qtdParadas} paradas`;
 
     if (metaEl && rotaAtual) {
-      metaEl.textContent = `${qtdParadas} entregas • ${rotaAtual.pesoTotal} kg • ${distKm.replace('.', ',')} km pelas ruas • ${tempoFormatado} de deslocamento`;
+      metaEl.textContent = `${qtdParadas} entregas • ${rotaAtual.pesoTotal} kg • ${distKm.replace(".", ",")} km pelas ruas • ${tempoFormatado} de deslocamento`;
     }
 
     const kpiDist = document.getElementById("kpi-total-distance");
     if (kpiDist) {
-      kpiDist.textContent = `${distKm.replace('.', ',')} km`;
+      kpiDist.textContent = `${distKm.replace(".", ",")} km`;
     }
     const kpiTime = document.getElementById("kpi-total-time");
     if (kpiTime) {
@@ -1208,8 +1382,8 @@ window.LogisticaModule = (function () {
     const todosPontos = [origem, ...rotaAtual.pedidos];
 
     // Delimitação de coordenadas geográficas de Sergipe (Aracaju e arredores)
-    const lats = todosPontos.map(p => p.latitude);
-    const lngs = todosPontos.map(p => p.longitude);
+    const lats = todosPontos.map((p) => p.latitude);
+    const lngs = todosPontos.map((p) => p.longitude);
 
     const minLat = Math.min(...lats) - 0.02;
     const maxLat = Math.max(...lats) + 0.02;
@@ -1223,7 +1397,9 @@ window.LogisticaModule = (function () {
       return 60 + ((lng - minLng) / (maxLng - minLng)) * (width - 120);
     }
     function projectY(lat) {
-      return height - 60 - ((lat - minLat) / (maxLat - minLat)) * (height - 120);
+      return (
+        height - 60 - ((lat - minLat) / (maxLat - minLat)) * (height - 120)
+      );
     }
 
     const ox = projectX(origem.longitude);
@@ -1232,7 +1408,7 @@ window.LogisticaModule = (function () {
     let pathD = `M ${ox} ${oy}`;
     const pontosProjetados = [{ x: ox, y: oy, data: origem, isOrigem: true }];
 
-    rotaAtual.pedidos.forEach(p => {
+    rotaAtual.pedidos.forEach((p) => {
       const px = projectX(p.longitude);
       const py = projectY(p.latitude);
       pathD += ` L ${px} ${py}`;
@@ -1272,17 +1448,23 @@ window.LogisticaModule = (function () {
         </g>
 
         <!-- Marcadores das Paradas Sequenciais -->
-        ${pontosProjetados.filter(p => !p.isOrigem).map(pt => {
-          const ped = pt.data;
-          const cor = ped.status === "Entregue" ? "#15803D" : 
-                      ped.status === "Em rota" ? "#2563EB" : rotaAtual.cor;
+        ${pontosProjetados
+          .filter((p) => !p.isOrigem)
+          .map((pt) => {
+            const ped = pt.data;
+            const cor =
+              ped.status === "Entregue"
+                ? "#15803D"
+                : ped.status === "Em rota"
+                  ? "#2563EB"
+                  : rotaAtual.cor;
 
-          return `
+            return `
             <g class="svg-map-pin" onclick="LogisticaModule.abrirInfoCardPorId('${ped.id}')" style="cursor:pointer;">
               <!-- Círculo do Marcador com Número da Parada -->
               <circle cx="${pt.x}" cy="${pt.y}" r="13" fill="${cor}" stroke="#FFFFFF" stroke-width="2" />
               <text x="${pt.x}" y="${pt.y + 4}" font-size="11" fill="#FFFFFF" font-weight="bold" text-anchor="middle">
-                ${ped.status === 'Entregue' ? 'OK' : ped.sequencia}
+                ${ped.status === "Entregue" ? "OK" : ped.sequencia}
               </text>
               <!-- Rótulo do Bairro -->
               <rect x="${pt.x - 30}" y="${pt.y + 16}" width="60" height="15" rx="3" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" opacity="0.95" />
@@ -1291,7 +1473,8 @@ window.LogisticaModule = (function () {
               </text>
             </g>
           `;
-        }).join('')}
+          })
+          .join("")}
       </svg>
     `;
   }
@@ -1310,11 +1493,14 @@ window.LogisticaModule = (function () {
     const totalEntregas = pedidosCarregados.length;
     const totalRotas = rotasCalculadas.length;
     const pesoTotal = rotasCalculadas.reduce((acc, r) => acc + r.pesoTotal, 0);
-    const valorTotal = rotasCalculadas.reduce((acc, r) => acc + r.valorTotal, 0);
+    const valorTotal = rotasCalculadas.reduce(
+      (acc, r) => acc + r.valorTotal,
+      0,
+    );
 
     // Soma das distâncias e tempos de todas as rotas
     let distTotalKm = 0;
-    rotasCalculadas.forEach(r => {
+    rotasCalculadas.forEach((r) => {
       const orig = ORIGENS_PRODUTORES[origemAtualId] || ORIGENS_PRODUTORES["1"];
       const ultima = r.pedidos[r.pedidos.length - 1];
       if (ultima) {
@@ -1333,21 +1519,29 @@ window.LogisticaModule = (function () {
 
     if (elTotal) elTotal.textContent = totalEntregas;
     if (elRotas) elRotas.textContent = totalRotas;
-    if (elPeso) elPeso.textContent = `${pesoTotal.toFixed(1).replace('.', ',')} kg`;
-    if (elDist) elDist.textContent = `${distTotalKm.toFixed(1).replace('.', ',')} km`;
+    if (elPeso)
+      elPeso.textContent = `${pesoTotal.toFixed(1).replace(".", ",")} kg`;
+    if (elDist)
+      elDist.textContent = `${distTotalKm.toFixed(1).replace(".", ",")} km`;
     if (elTempo) elTempo.textContent = tempoGeral.formatado;
-    if (elValor) elValor.textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+    if (elValor)
+      elValor.textContent = `R$ ${valorTotal.toFixed(2).replace(".", ",")}`;
 
     // Atualiza barra de ocupação da rota atualmente em exibição
     const rotaAtual = rotasCalculadas[rotaSelecionadaIndex];
     if (rotaAtual) {
       const elLoadPct = document.getElementById("kpi-load-percentage");
       const elLoadBar = document.getElementById("kpi-load-bar");
-      if (elLoadPct) elLoadPct.textContent = `${rotaAtual.ocupacaoVeiculo}% (${rotaAtual.pesoTotal}kg / ${rotaAtual.capacidadeMaxima}kg)`;
+      if (elLoadPct)
+        elLoadPct.textContent = `${rotaAtual.ocupacaoVeiculo}% (${rotaAtual.pesoTotal}kg / ${rotaAtual.capacidadeMaxima}kg)`;
       if (elLoadBar) {
         elLoadBar.style.width = `${rotaAtual.ocupacaoVeiculo}%`;
-        elLoadBar.style.backgroundColor = rotaAtual.ocupacaoVeiculo > 90 ? "#DC2626" : 
-                                          rotaAtual.ocupacaoVeiculo > 75 ? "#D97706" : "#16A34A";
+        elLoadBar.style.backgroundColor =
+          rotaAtual.ocupacaoVeiculo > 90
+            ? "#DC2626"
+            : rotaAtual.ocupacaoVeiculo > 75
+              ? "#D97706"
+              : "#16A34A";
       }
     }
   }
@@ -1356,13 +1550,14 @@ window.LogisticaModule = (function () {
     const container = document.getElementById("log-routes-list");
     if (!container) return;
 
-    container.innerHTML = rotasCalculadas.map((r, idx) => {
-      const isSel = idx === rotaSelecionadaIndex;
-      return `
-        <button class="route-tab-card ${isSel ? 'active' : ''}" onclick="LogisticaModule.selecionarRota(${idx})" style="border-left-color: ${r.cor};">
+    container.innerHTML = rotasCalculadas
+      .map((r, idx) => {
+        const isSel = idx === rotaSelecionadaIndex;
+        return `
+        <button class="route-tab-card ${isSel ? "active" : ""}" onclick="LogisticaModule.selecionarRota(${idx})" style="border-left-color: ${r.cor};">
           <div class="route-tab-top">
             <strong style="color: var(--text-main); font-size: 13px;">${r.nome}</strong>
-            <span class="route-status-pill ${r.status.toLowerCase().replace(' ', '-')}">${r.status}</span>
+            <span class="route-status-pill ${r.status.toLowerCase().replace(" ", "-")}">${r.status}</span>
           </div>
           <div class="route-tab-meta">
             <span>${r.pedidos.length} entregas</span>
@@ -1373,7 +1568,8 @@ window.LogisticaModule = (function () {
           </div>
         </button>
       `;
-    }).join('');
+      })
+      .join("");
   }
 
   function renderizarDetalhesRotaSelecionada() {
@@ -1392,9 +1588,11 @@ window.LogisticaModule = (function () {
     const btnStart = document.getElementById("btn-start-route");
 
     if (titleEl) titleEl.textContent = rota.nome;
-    if (metaEl) metaEl.textContent = `${rota.pedidos.length} entregas • ${rota.pesoTotal} kg • ${distEstKm} km est. • ${tempoEst.formatado}`;
+    if (metaEl)
+      metaEl.textContent = `${rota.pedidos.length} entregas • ${rota.pesoTotal} kg • ${distEstKm} km est. • ${tempoEst.formatado}`;
     if (farmNameEl) farmNameEl.textContent = `${origem.nome} (${origem.local})`;
-    if (stopsCountEl) stopsCountEl.textContent = `${rota.pedidos.length} paradas sequenciadas`;
+    if (stopsCountEl)
+      stopsCountEl.textContent = `${rota.pedidos.length} paradas sequenciadas`;
 
     if (btnStart) {
       if (rota.status === "Concluída") {
@@ -1417,24 +1615,31 @@ window.LogisticaModule = (function () {
     if (!stopsList) return;
 
     // Filtra por status se houver filtro ativo
-    const pedidosFiltrados = statusFiltroAtual === "todos" ? rota.pedidos : 
-      rota.pedidos.filter(p => p.status === statusFiltroAtual);
+    const pedidosFiltrados =
+      statusFiltroAtual === "todos"
+        ? rota.pedidos
+        : rota.pedidos.filter((p) => p.status === statusFiltroAtual);
 
     if (pedidosFiltrados.length === 0) {
       stopsList.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:12px;">Nenhuma parada com o status selecionado.</div>`;
       return;
     }
 
-    stopsList.innerHTML = pedidosFiltrados.map(p => {
-      const isEntregue = p.status === "Entregue";
-      const isEmRota = p.status === "Em rota";
-      const corStatus = isEntregue ? "status-tag-entregue" : isEmRota ? "status-tag-rota" : "status-tag-pendente";
+    stopsList.innerHTML = pedidosFiltrados
+      .map((p) => {
+        const isEntregue = p.status === "Entregue";
+        const isEmRota = p.status === "Em rota";
+        const corStatus = isEntregue
+          ? "status-tag-entregue"
+          : isEmRota
+            ? "status-tag-rota"
+            : "status-tag-pendente";
 
-      return `
-        <div class="stop-card-row ${p.id === paradaSelecionadaId ? 'selected' : ''}" onclick="LogisticaModule.abrirInfoCardPorId('${p.id}')">
+        return `
+        <div class="stop-card-row ${p.id === paradaSelecionadaId ? "selected" : ""}" onclick="LogisticaModule.abrirInfoCardPorId('${p.id}')">
           <div class="stop-num-col">
-            <span class="stop-num-badge" style="background-color: ${isEntregue ? '#15803D' : rota.cor};">
-              ${isEntregue ? 'OK' : p.sequencia.toString().padStart(2, '0')}
+            <span class="stop-num-badge" style="background-color: ${isEntregue ? "#15803D" : rota.cor};">
+              ${isEntregue ? "OK" : p.sequencia.toString().padStart(2, "0")}
             </span>
           </div>
 
@@ -1447,30 +1652,35 @@ window.LogisticaModule = (function () {
             <p class="stop-addr-text">${p.endereco}, ${p.bairro} — ${p.cidade}</p>
             
             <div class="stop-items-preview">
-              <span>${p.produtos.join(' • ')}</span>
+              <span>${p.produtos.join(" • ")}</span>
             </div>
 
             <div class="stop-kpi-footer">
               <span>Peso: <strong>${p.peso} kg</strong></span>
               <span>•</span>
-              <span>Valor: <strong>R$ ${Number(p.valor).toFixed(2).replace('.', ',')}</strong></span>
+              <span>Valor: <strong>R$ ${Number(p.valor).toFixed(2).replace(".", ",")}</strong></span>
               <span>•</span>
               <span>Previsão: <strong>${p.horarioPrevisto}</strong> <small>(Janela: ${p.horarioInicio}-${p.horarioFim})</small></span>
             </div>
           </div>
 
           <div class="stop-actions-col" onclick="event.stopPropagation()">
-            ${isEntregue ? `
+            ${
+              isEntregue
+                ? `
               <span style="font-size:11px; color:#15803D; font-weight:600;">Entregue</span>
-            ` : `
+            `
+                : `
               <button class="btn-mark-delivered" onclick="LogisticaModule.marcarComoEntregue('${p.id}')" title="Confirmar entrega realizada">
                 Entregar
               </button>
-            `}
+            `
+            }
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
   }
 
   // ==========================================================================
@@ -1509,7 +1719,7 @@ window.LogisticaModule = (function () {
     if (!rota) return;
 
     rota.status = "Em rota";
-    rota.pedidos.forEach(p => {
+    rota.pedidos.forEach((p) => {
       if (p.status === "Pendente") p.status = "Em rota";
     });
 
@@ -1521,14 +1731,14 @@ window.LogisticaModule = (function () {
   }
 
   function marcarComoEntregue(pedidoId) {
-    const pedido = pedidosCarregados.find(p => p.id === pedidoId);
+    const pedido = pedidosCarregados.find((p) => p.id === pedidoId);
     if (!pedido) return;
 
     pedido.status = "Entregue";
 
     // Atualiza status da rota se todas foram entregues
     const rota = rotasCalculadas[rotaSelecionadaIndex];
-    if (rota && rota.pedidos.every(p => p.status === "Entregue")) {
+    if (rota && rota.pedidos.every((p) => p.status === "Entregue")) {
       rota.status = "Concluída";
     }
 
@@ -1545,7 +1755,10 @@ window.LogisticaModule = (function () {
 
     // Salva atualização na API caso esteja conectada
     if (typeof apiCall === "function") {
-      apiCall("atualizarStatusEntrega", "POST", { id: pedido.id, status: "Entregue" });
+      apiCall("atualizarStatusEntrega", "POST", {
+        id: pedido.id,
+        status: "Entregue",
+      });
     }
   }
 
@@ -1564,7 +1777,11 @@ window.LogisticaModule = (function () {
   function toggleModoDemonstracao() {
     modoDemonstracaoAtivo = !modoDemonstracaoAtivo;
     if (typeof showToast === "function") {
-      showToast(modoDemonstracaoAtivo ? "Modo Demonstração Ativo (18 pedidos em Sergipe)" : "Buscando dados ao vivo do Google Sheets...");
+      showToast(
+        modoDemonstracaoAtivo
+          ? "Modo Demonstração Ativo (18 pedidos em Sergipe)"
+          : "Buscando dados ao vivo do Google Sheets...",
+      );
     }
   }
 
@@ -1573,7 +1790,7 @@ window.LogisticaModule = (function () {
   // ==========================================================================
 
   function abrirInfoCardPorId(id) {
-    const pedido = pedidosCarregados.find(p => p.id === id);
+    const pedido = pedidosCarregados.find((p) => p.id === id);
     if (pedido) abrirInfoCardParada(pedido);
   }
 
@@ -1582,18 +1799,23 @@ window.LogisticaModule = (function () {
     const card = document.getElementById("map-stop-infocard");
     if (!card) return;
 
-    document.getElementById("info-stop-num").textContent = `Parada ${p.sequencia.toString().padStart(2, '0')}`;
+    document.getElementById("info-stop-num").textContent =
+      `Parada ${p.sequencia.toString().padStart(2, "0")}`;
     document.getElementById("info-client").textContent = p.cliente;
-    document.getElementById("info-addr").textContent = `${p.endereco}, ${p.bairro} — ${p.cidade}`;
+    document.getElementById("info-addr").textContent =
+      `${p.endereco}, ${p.bairro} — ${p.cidade}`;
     document.getElementById("info-weight").textContent = `${p.peso} kg`;
-    document.getElementById("info-value").textContent = `R$ ${Number(p.valor).toFixed(2).replace('.', ',')}`;
-    document.getElementById("info-window").textContent = `Previsão: ${p.horarioPrevisto} (Janela: ${p.horarioInicio}-${p.horarioFim})`;
-    
+    document.getElementById("info-value").textContent =
+      `R$ ${Number(p.valor).toFixed(2).replace(".", ",")}`;
+    document.getElementById("info-window").textContent =
+      `Previsão: ${p.horarioPrevisto} (Janela: ${p.horarioInicio}-${p.horarioFim})`;
+
     const statusEl = document.getElementById("info-status");
     statusEl.textContent = p.status;
-    statusEl.className = `infotag-status ${p.status.toLowerCase().replace(' ', '-')}`;
+    statusEl.className = `infotag-status ${p.status.toLowerCase().replace(" ", "-")}`;
 
-    document.getElementById("info-products").textContent = p.produtos.join(", ");
+    document.getElementById("info-products").textContent =
+      p.produtos.join(", ");
 
     const btnAction = document.getElementById("btn-info-action");
     if (btnAction) {
@@ -1627,7 +1849,9 @@ window.LogisticaModule = (function () {
   function abrirInfoOrigem() {
     const origem = ORIGENS_PRODUTORES[origemAtualId] || ORIGENS_PRODUTORES["1"];
     if (typeof showToast === "function") {
-      showToast(`Ponto de Partida: ${origem.nome} (${origem.endereco}, ${origem.local})`);
+      showToast(
+        `Ponto de Partida: ${origem.nome} (${origem.endereco}, ${origem.local})`,
+      );
     }
   }
 
@@ -1648,12 +1872,12 @@ window.LogisticaModule = (function () {
       "Identificando concentração geográfica em Aracaju e Grande Aracaju...",
       "Agrupando pedidos por proximidade e capacidade do veículo (120 kg)...",
       "Calculando sequência ótima de entregas (Algoritmo Nearest Neighbor + 2-Opt)...",
-      "Roteirização concluída! 3 rotas organizadas com estimativa de tempo e carga."
+      "Roteirização concluída! 3 rotas organizadas com estimativa de tempo e carga.",
     ];
 
     for (let i = 0; i < etapas.length; i++) {
       if (feedbackText) feedbackText.textContent = etapas[i];
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 600));
     }
 
     recalcularRotas();
@@ -1675,12 +1899,15 @@ window.LogisticaModule = (function () {
 
   function recalcularRotas() {
     const origem = ORIGENS_PRODUTORES[origemAtualId] || ORIGENS_PRODUTORES["1"];
-    
+
     // 1. Agrupamento em clusters por região e capacidade
-    rotasCalculadas = agruparPedidosPorRegiao(pedidosCarregados, capacidadeVeiculoKg);
+    rotasCalculadas = agruparPedidosPorRegiao(
+      pedidosCarregados,
+      capacidadeVeiculoKg,
+    );
 
     // 2. Otimização de sequência com 2-Opt para cada rota individualmente
-    rotasCalculadas.forEach(r => {
+    rotasCalculadas.forEach((r) => {
       r.pedidos = otimizarSequenciaRota(origem, r.pedidos);
     });
   }
@@ -1715,68 +1942,71 @@ window.LogisticaModule = (function () {
     abrirInfoCardPorId,
     fecharInfoCard,
     avancarStatusParadaSelecionada,
-    abrirInfoOrigem
+    abrirInfoOrigem,
   };
-
 })();
-
 
 // ============================================================================
 // FUNÇÕES DE INTEGRAÇÃO COM A API DO GOOGLE APPS SCRIPT / GOOGLE SHEETS
 // ============================================================================
 
 async function buscarPedidos() {
-  if (typeof apiCall === 'function' && API_URL && API_URL.trim() !== '') {
+  if (typeof apiCall === "function" && API_URL && API_URL.trim() !== "") {
     try {
-      const res = await apiCall('pedidos', 'GET');
+      const res = await apiCall("pedidos", "GET");
       if (res && res.success && res.data && res.data.length > 0) {
         return res.data;
       }
-    } catch(e) {
-      console.warn('Logística: API indisponível, utilizando dados locais de demonstração.');
+    } catch (e) {
+      console.warn(
+        "Logística: API indisponível, utilizando dados locais de demonstração.",
+      );
     }
   }
   return window.LogisticaModule ? window.LogisticaModule.pedidosDemo : [];
 }
 
 async function buscarProdutores() {
-  if (typeof apiCall === 'function' && API_URL && API_URL.trim() !== '') {
+  if (typeof apiCall === "function" && API_URL && API_URL.trim() !== "") {
     try {
-      const res = await apiCall('produtores', 'GET');
+      const res = await apiCall("produtores", "GET");
       if (res && res.success && res.data && res.data.length > 0) {
         return res.data;
       }
-    } catch(e) {}
+    } catch (e) {}
   }
-  return typeof produtores !== 'undefined' ? produtores : [];
+  return typeof produtores !== "undefined" ? produtores : [];
 }
 
 async function salvarRota(rota) {
-  if (typeof apiCall === 'function' && API_URL && API_URL.trim() !== '') {
+  if (typeof apiCall === "function" && API_URL && API_URL.trim() !== "") {
     try {
-      return await apiCall('salvarRota', 'POST', { rota });
-    } catch(e) {
-      console.error('Erro ao salvar rota na planilha:', e);
+      return await apiCall("salvarRota", "POST", { rota });
+    } catch (e) {
+      console.error("Erro ao salvar rota na planilha:", e);
     }
   }
-  return { success: true, message: 'Rota salva localmente (Modo Demonstração)' };
+  return {
+    success: true,
+    message: "Rota salva localmente (Modo Demonstração)",
+  };
 }
 
 async function atualizarStatusEntrega(pedidoId, status) {
-  if (typeof apiCall === 'function' && API_URL && API_URL.trim() !== '') {
+  if (typeof apiCall === "function" && API_URL && API_URL.trim() !== "") {
     try {
-      return await apiCall('atualizarStatusEntrega', 'POST', { id: pedidoId, status });
-    } catch(e) {
-      console.error('Erro ao atualizar status na planilha:', e);
+      return await apiCall("atualizarStatusEntrega", "POST", {
+        id: pedidoId,
+        status,
+      });
+    } catch (e) {
+      console.error("Erro ao atualizar status na planilha:", e);
     }
   }
-  return { success: true, message: 'Status atualizado localmente' };
+  return { success: true, message: "Status atualizado localmente" };
 }
 
 window.buscarPedidos = buscarPedidos;
 window.buscarProdutores = buscarProdutores;
 window.salvarRota = salvarRota;
 window.atualizarStatusEntrega = atualizarStatusEntrega;
-
-
-

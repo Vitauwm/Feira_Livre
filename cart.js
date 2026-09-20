@@ -3,21 +3,21 @@
 // ============================================================================
 
 function toggleCartDrawer() {
-  const drawer = document.getElementById('cart-drawer');
-  if (drawer) drawer.classList.toggle('active');
+  const drawer = document.getElementById("cart-drawer");
+  if (drawer) drawer.classList.toggle("active");
   renderCartDrawer();
 }
 
 function closeCartDrawer() {
-  const drawer = document.getElementById('cart-drawer');
-  if (drawer) drawer.classList.remove('active');
+  const drawer = document.getElementById("cart-drawer");
+  if (drawer) drawer.classList.remove("active");
 }
 
 function alterarQtdCarrinho(prodId, delta) {
-  const prod = produtos.find(p => String(p.id) === String(prodId));
+  const prod = produtos.find((p) => String(p.id) === String(prodId));
   if (!prod) return;
 
-  const itemIdx = cart.findIndex(i => String(i.id) === String(prodId));
+  const itemIdx = cart.findIndex((i) => String(i.id) === String(prodId));
 
   if (itemIdx > -1) {
     cart[itemIdx].quantidade += delta;
@@ -32,7 +32,7 @@ function alterarQtdCarrinho(prodId, delta) {
       unidade: prod.unidade,
       imagem: prod.imagem,
       produtor_id: prod.produtor_id,
-      quantidade: delta
+      quantidade: delta,
     });
   }
 
@@ -44,13 +44,13 @@ function alterarQtdCarrinho(prodId, delta) {
 
 function updateCartUI() {
   const count = cart.reduce((a, b) => a + b.quantidade, 0);
-  const badge = document.getElementById('header-cart-count');
+  const badge = document.getElementById("header-cart-count");
   if (badge) badge.textContent = count;
 }
 
 function renderCartDrawer() {
-  const body = document.getElementById('cart-drawer-body');
-  const footer = document.getElementById('cart-drawer-footer');
+  const body = document.getElementById("cart-drawer-body");
+  const footer = document.getElementById("cart-drawer-footer");
   if (!body) return;
 
   if (cart.length === 0) {
@@ -61,19 +61,21 @@ function renderCartDrawer() {
         <p style="font-size: 13px;">Adicione produtos frescos dos agricultores locais!</p>
       </div>
     `;
-    if (footer) footer.style.display = 'none';
+    if (footer) footer.style.display = "none";
     return;
   }
 
-  if (footer) footer.style.display = 'block';
+  if (footer) footer.style.display = "block";
 
-  body.innerHTML = cart.map(item => `
+  body.innerHTML = cart
+    .map(
+      (item) => `
     <div class="cart-row">
       <img src="${getProductImage(item)}" alt="${item.nome}" onerror="this.onerror=null; this.src=\'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=600&auto=format&fit=crop&q=80\';">
       <div class="cart-row-info">
         <h5>${item.nome}</h5>
-        <span>R$ ${item.preco.toFixed(2).replace('.', ',')} / ${item.unidade}</span>
-        <div class="cart-row-price">Subtotal: R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</div>
+        <span>R$ ${item.preco.toFixed(2).replace(".", ",")} / ${item.unidade}</span>
+        <div class="cart-row-price">Subtotal: R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}</div>
       </div>
       <div class="qty-pill" style="padding: 2px;">
         <button onclick="alterarQtdCarrinho('${item.id}', -1)">-</button>
@@ -81,7 +83,9 @@ function renderCartDrawer() {
         <button onclick="alterarQtdCarrinho('${item.id}', 1)">+</button>
       </div>
     </div>
-  `).join('');
+  `,
+    )
+    .join("");
 
   updateCartCalculations();
 }
@@ -92,15 +96,23 @@ function updateCartCalculations() {
   let currentShipping = shippingRate;
 
   let economiaProdutos = 0;
-  cart.forEach(item => {
-    const prod = produtos.find(p => String(p.id) === String(item.id));
-    if (prod && prod.preco_antigo && Number(prod.preco_antigo) > Number(prod.preco)) {
-      economiaProdutos += (Number(prod.preco_antigo) - Number(prod.preco)) * item.quantidade;
+  cart.forEach((item) => {
+    const prod = produtos.find((p) => String(p.id) === String(item.id));
+    if (
+      prod &&
+      prod.preco_antigo &&
+      Number(prod.preco_antigo) > Number(prod.preco)
+    ) {
+      economiaProdutos +=
+        (Number(prod.preco_antigo) - Number(prod.preco)) * item.quantidade;
     }
   });
-  
+
   let economiaFrete = 0;
-  const isAssinante = typeof verificarAssinaturaCliente === 'function' ? verificarAssinaturaCliente().isAssinante : false;
+  const isAssinante =
+    typeof verificarAssinaturaCliente === "function"
+      ? verificarAssinaturaCliente().isAssinante
+      : false;
   if (isAssinante && subtotal >= 50) {
     economiaFrete = shippingRate;
     currentShipping = 0;
@@ -109,49 +121,53 @@ function updateCartCalculations() {
   const totalEconomia = desconto + economiaProdutos + economiaFrete;
   const total = Math.max(0, subtotal + currentShipping - desconto);
 
-  document.getElementById('cart-subtotal-val').textContent = R$ ;
-  
+  document.getElementById("cart-subtotal-val").textContent =
+    `R$ ${subtotal.toFixed(2).replace(".", ",")}`;
   if (economiaFrete > 0) {
-    document.getElementById('cart-shipping-val').innerHTML = <span style="text-decoration:line-through; color:var(--text-light); margin-right:6px;">R$ </span> <strong style="color:var(--primary);">Grátis</strong>;
+    document.getElementById("cart-shipping-val").innerHTML =
+      `<span style="text-decoration:line-through; color:var(--text-light); margin-right:6px;">R$ ${TAXA_ENTREGA.toFixed(2).replace(".", ",")}</span> <strong style="color:var(--primary);">Grátis</strong>`;
   } else {
-    document.getElementById('cart-shipping-val').textContent = R$ ;
+    document.getElementById("cart-shipping-val").textContent =
+      `R$ ${currentShipping.toFixed(2).replace(".", ",")}`;
   }
 
-  const descLine = document.getElementById('cart-discount-line');
+  const descLine = document.getElementById("cart-discount-line");
   if (desconto > 0) {
-    descLine.style.display = 'flex';
-    document.getElementById('cart-discount-val').textContent = - R$ ;
+    descLine.style.display = "flex";
+    document.getElementById("cart-discount-val").textContent =
+      `- R$ ${desconto.toFixed(2).replace(".", ",")}`;
   } else {
-    descLine.style.display = 'none';
+    descLine.style.display = "none";
   }
 
-  document.getElementById('cart-total-val').textContent = R$ ;
+  document.getElementById("cart-total-val").textContent =
+    `R$ ${total.toFixed(2).replace(".", ",")}`;
 
-  let economyBanner = document.getElementById('cart-economy-banner-wrap');
+  let economyBanner = document.getElementById("cart-economy-banner-wrap");
   if (!economyBanner) {
-    economyBanner = document.createElement('div');
-    economyBanner.id = 'cart-economy-banner-wrap';
-    const footer = document.getElementById('cart-drawer-footer');
+    economyBanner = document.createElement("div");
+    economyBanner.id = "cart-economy-banner-wrap";
+    const footer = document.getElementById("cart-drawer-footer");
     if (footer) {
       footer.insertBefore(economyBanner, footer.firstChild);
     }
   }
 
   if (totalEconomia > 0) {
-    economyBanner.innerHTML = <div class="cart-economy-banner">✨ Você economizou R$  neste pedido!</div>;
+    economyBanner.innerHTML = `<div class="cart-economy-banner">✨ Você economizou R$ ${totalEconomia.toFixed(2).replace(".", ",")} neste pedido!</div>`;
   } else {
-    economyBanner.innerHTML = '';
+    economyBanner.innerHTML = "";
   }
 }
 
-function aplicarCupom() {
-  const input = document.getElementById('coupon-input');
+async function aplicarCupom() {
+  const input = document.getElementById("coupon-input");
   if (!input || !input.value.trim()) return;
 
   const subtotal = cart.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
-  const res = await apiCall('validarCupom', 'GET', {
+  const res = await apiCall("validarCupom", "GET", {
     codigo: input.value.trim(),
-    subtotal: subtotal
+    subtotal: subtotal,
   });
 
   if (res.success && res.data && res.data.valido) {
@@ -160,8 +176,7 @@ function aplicarCupom() {
     updateCartCalculations();
   } else {
     appliedCouponData = null;
-    showToast(res.error || 'Cupom inválido ou expirado');
+    showToast(res.error || "Cupom inválido ou expirado");
     updateCartCalculations();
   }
 }
-
