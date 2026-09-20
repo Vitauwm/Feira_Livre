@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1E4D2B">
   <title>Feira Livre — Comércio Direto da Agricultura Familiar de Sergipe</title>
   <meta name="description" content="Alimentos frescos, agroecológicos e artesanais direto dos pequenos produtores de Sergipe para a sua casa.">
   <link rel="icon" type="image/png" href="images/logo.png">
@@ -56,6 +58,11 @@
 
       <!-- Ações: Localização, Cadastro e Carrinho -->
       <div class="header-right">
+        <button class="btn-nav-action" onclick="toggleDarkMode()" title="Alternar Modo Escuro" style="padding: 8px; min-width: 38px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
         <div class="loc-badge" onclick="switchView('checkout')" title="Local de entrega">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -1038,6 +1045,18 @@
   </div>
 
   <script src="main.js"></script>`n  <script src="api.js"></script>`n  <script src="products.js"></script>`n  <script src="cart.js"></script>`n  <script src="checkout.js"></script>`n  <script src="logistica.js"></script>`n  <script src="subscription.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(registration => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
+
 

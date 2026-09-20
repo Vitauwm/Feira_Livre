@@ -382,3 +382,20 @@ function showToast(msg) {
   }, 3500);
 }
 
+
+// ============================================================================
+// DARK MODE
+// ============================================================================
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('FL_DARK_MODE', isDark ? 'true' : 'false');
+}
+
+// Inicializa Dark Mode se estava salvo
+document.addEventListener('DOMContentLoaded', () => {
+  const savedDarkMode = localStorage.getItem('FL_DARK_MODE');
+  if (savedDarkMode === 'true') {
+    document.body.classList.add('dark-theme');
+  }
+});
