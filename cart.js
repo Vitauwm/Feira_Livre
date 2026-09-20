@@ -4,13 +4,13 @@
 
 function toggleCartDrawer() {
   const drawer = document.getElementById("cart-drawer");
-  if (drawer) drawer.classList.toggle("active");
+  if (drawer) drawer.classList.toggle("open");
   renderCartDrawer();
 }
 
 function closeCartDrawer() {
   const drawer = document.getElementById("cart-drawer");
-  if (drawer) drawer.classList.remove("active");
+  if (drawer) drawer.classList.remove("open");
 }
 
 function alterarQtdCarrinho(prodId, delta) {
@@ -125,7 +125,7 @@ function updateCartCalculations() {
     `R$ ${subtotal.toFixed(2).replace(".", ",")}`;
   if (economiaFrete > 0) {
     document.getElementById("cart-shipping-val").innerHTML =
-      `<span style="text-decoration:line-through; color:var(--text-light); margin-right:6px;">R$ ${TAXA_ENTREGA.toFixed(2).replace(".", ",")}</span> <strong style="color:var(--primary);">Grátis</strong>`;
+      `<span style="text-decoration:line-through; color:var(--text-light); margin-right:6px;">R$ ${shippingRate.toFixed(2).replace(".", ",")}</span> <strong style="color:var(--primary);">Grátis</strong>`;
   } else {
     document.getElementById("cart-shipping-val").textContent =
       `R$ ${currentShipping.toFixed(2).replace(".", ",")}`;

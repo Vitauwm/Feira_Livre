@@ -307,6 +307,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadLocalState();
   updateApiStatusIndicator();
   await carregarDadosIniciais();
+  
+  // Limpar e atualizar itens do carrinho com base no banco de dados mais recente
+  cart = cart.filter(cartItem => {
+    const p = produtos.find(p => String(p.id) === String(cartItem.id));
+    if (p) {
+      cartItem.nome = p.nome;
+      cartItem.preco = Number(p.preco);
+      cartItem.imagem = p.imagem;
+      cartItem.unidade = p.unidade;
+      return true;
+    }
+    return false;
+  });
+  saveLocalState();
+  
   renderCategorias();
   renderProdutos();
   renderProdutores();
